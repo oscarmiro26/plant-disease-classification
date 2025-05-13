@@ -12,7 +12,6 @@ from ..data.sampler import calculate_class_weights, create_sampler
 from ..models.cnn import CNN
 from ..training import config
 
-# --- training hyperparams (could move to config.py if you like) ---
 BATCH_SIZE     = 128
 NUM_EPOCHS     = 50
 NUM_WORKERS    = 4
@@ -21,7 +20,7 @@ STEP_SIZE      = 10
 GAMMA          = 0.1
 
 def train_and_evaluate():
-    # 1) Create stratified splits
+    # Creating data splits
     train_df, val_df, test_df = create_splits(
         data_dir    = config.RAW_DATA_DIR,
         label_map   = config.LABEL_MAP,
@@ -29,15 +28,17 @@ def train_and_evaluate():
         val_size    = config.VALIDATION_SPLIT_SIZE,
         random_seed = 42
     )
-    # 2) Compute class‐weights & sampler for imbalance
+
+    # Calculating class weights
     class_weights = calculate_class_weights(train_df, config.LABEL_MAP).to(config.DEVICE)
     train_sampler = create_sampler(train_df, config.LABEL_MAP)
 
-    # 3) Datasets & loaders
+    # Creating datasets
     train_ds = PlantDiseaseDataset(train_df, transform=train_transforms)
     val_ds   = PlantDiseaseDataset(val_df,   transform=val_test_transforms)
     test_ds  = PlantDiseaseDataset(test_df,  transform=val_test_transforms)
 
+    # Creating data loaders
     train_loader = DataLoader(
         train_ds,
         batch_size=BATCH_SIZE,
@@ -57,7 +58,7 @@ def train_and_evaluate():
         num_workers=NUM_WORKERS
     )
 
-    # 4) Model, criterion, optimizer, scheduler
+    # Creating model, criterion, optimizer, scheduler
     model = CNN(
         num_classes=config.NUM_CLASSES,
         base_channels=64,
@@ -68,10 +69,10 @@ def train_and_evaluate():
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
 
-    # 5) Training loop
+    # Training loop
     train_losses, val_losses = [], []
     for epoch in range(1, NUM_EPOCHS + 1):
-        # ——————————— Training ———————————
+        # Training
         model.train()
         running_train_loss = 0.0
         for imgs, labels in train_loader:
@@ -86,7 +87,7 @@ def train_and_evaluate():
         epoch_train_loss = running_train_loss / len(train_loader.dataset)
         train_losses.append(epoch_train_loss)
 
-        # —————————— Validation ——————————
+        # Validation for hyperparameter tuning
         model.eval()
         running_val_loss = 0.0
         with torch.no_grad():
@@ -102,7 +103,7 @@ def train_and_evaluate():
         scheduler.step()
         print(f"Epoch {epoch:02d}  Train Loss: {epoch_train_loss:.4f}  Val Loss: {epoch_val_loss:.4f}")
 
-    # 6) Plot losses
+    # Plot losses
     plt.figure()
     plt.plot(range(1, NUM_EPOCHS + 1), train_losses)
     plt.plot(range(1, NUM_EPOCHS + 1), val_losses)
@@ -113,7 +114,7 @@ def train_and_evaluate():
     plt.tight_layout()
     plt.show()
 
-    # 7) Final test evaluation
+    # Evaluation on the test set
     all_preds, all_labels = [], []
     model.eval()
     with torch.no_grad():
@@ -124,7 +125,7 @@ def train_and_evaluate():
             all_preds.extend(preds)
             all_labels.extend(labels.tolist())
 
-    # 8) Confusion matrix & classification report
+    # Confusion matrix and classification report
     cm = confusion_matrix(all_labels, all_preds)
     print("Confusion Matrix (rows=true, cols=predicted):")
     print(cm)

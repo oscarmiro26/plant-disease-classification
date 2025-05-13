@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 class CNN(nn.Module):
     """
-    A shallow CNN: three convolutional blocks with increased channel widths.
+    A CNN: three convolutional blocks with increased channel widths.
     """
     def __init__(
         self,
@@ -36,7 +36,7 @@ class CNN(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2)   # H/8
         )
 
-        # Classification head: global pooling + dropout + linear
+        # Classification head
         self.classifier = nn.Sequential(
             nn.AdaptiveAvgPool2d((1, 1)),
             nn.Flatten(),
