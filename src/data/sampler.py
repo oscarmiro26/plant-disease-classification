@@ -13,8 +13,7 @@ def _inverse_frequency_map(dataframe: pd.DataFrame, label_map: dict) -> dict:
     total_samples = len(dataframe)
     
     # Inverse frequency: total_samples / class_count
-    inv_freq = {label: total_samples / count
-                for label, count in class_counts.items() if count > 0}
+    inv_freq = {label: total_samples / count for label, count in class_counts.items() if count > 0}
     
     # Ensure every label in label_map has an entry (default weight 1.0)
     for label in label_map:
@@ -40,10 +39,17 @@ def calculate_class_weights(dataframe: pd.DataFrame, label_map: dict) -> torch.T
     return weights_tensor
 
 
-def create_sampler(dataframe: pd.DataFrame, label_map: dict) -> WeightedRandomSampler:
+def create_sampler(
+    dataframe: pd.DataFrame, 
+    label_map: dict, 
+    use_mixing_sampler: bool = False, 
+    alpha: float = 0.5
+) -> WeightedRandomSampler:
     """
     Creates a WeightedRandomSampler to address class imbalance by sampling
     inversely proportional to class frequency.
+    If use_mixing_sampler is True, a mixing sampler is created where the per-sample
+    weight is a mix of inverse frequency and uniform weights: w = \alpha * w_inv + (1 - \alpha) * 1.
     """
     print("Creating WeightedRandomSampler...")
     # Compute inverse frequency map
@@ -51,6 +57,9 @@ def create_sampler(dataframe: pd.DataFrame, label_map: dict) -> WeightedRandomSa
 
     # Map each sample's label to its weight
     sample_weights = dataframe['label'].map(inv_freq_map).to_numpy(dtype=np.float64)
+
+    if use_mixing_sampler:
+        sample_weights = alpha * sample_weights + (1 - alpha)
 
     # Handle any unexpected NaNs by replacing with median weight
     if np.isnan(sample_weights).any():
