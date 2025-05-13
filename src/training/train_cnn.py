@@ -191,9 +191,9 @@ def train_and_evaluate():
 
     # Log metrics so they are human readable
     logger.info("Confusion Matrix:")
-    logger.info(cm)
-    logger.info("\nClassification Report:")
-    logger.info(report)
+    logger.info(f"\n{cm}")
+    logger.info("Classification Report:")
+    logger.info(f"\n{report}")
 
     # Save per-class metrics to CSV
     precision, recall, f1, support = precision_recall_fscore_support(
