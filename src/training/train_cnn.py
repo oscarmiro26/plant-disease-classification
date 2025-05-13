@@ -24,6 +24,7 @@ LEARNING_RATE  = 1e-3
 STEP_SIZE      = 10
 GAMMA          = 0.8
 MIX_ALPHA      = 0.7
+PATIENCE       = 10
 
 
 # Set up logging
@@ -101,6 +102,9 @@ def train_and_evaluate():
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
 
+    best_val_loss = float('inf')
+    patience_counter = 0
+
     # Training loop
     train_losses, val_losses = [], []
     for epoch in range(1, NUM_EPOCHS + 1):
@@ -134,6 +138,16 @@ def train_and_evaluate():
 
         scheduler.step()
         logger.info(f"Epoch {epoch:02d}  Train Loss: {epoch_train_loss:.4f}  Val Loss: {epoch_val_loss:.4f}")
+
+        # Early stopiing
+        if epoch_val_loss < best_val_loss:
+            best_val_loss = epoch_val_loss
+            patience_counter = 0
+        else:
+            patience_counter += 1
+            if patience_counter >= PATIENCE:
+                logger.info(f"Early stopping triggered at epoch {epoch} (no improvement for {PATIENCE} epochs).")
+                break
 
 
     # Saving the model weights
