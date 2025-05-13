@@ -21,20 +21,22 @@ class PlantDiseaseDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        img_path = self.dataframe.iloc[idx]['filepath']
-        label_str = self.dataframe.iloc[idx]['label']
+        row = self.dataframe.iloc[idx]
+        img_path = row['filepath']
+        label_str = row['label']
         
         try:
-            img = Image.open(img_path)
+            with Image.open(img_path) as img:
+                img = img.convert('RGB')
         except FileNotFoundError:
             raise FileNotFoundError(f"Image file not found at {img_path}.")
         except Exception as e:
             raise RuntimeError(f"Error loading image {img_path}: {e}.")
 
-        label_index = config.LABEL_MAP.get(label_str)
-        if label_index is None:
+        if label_str not in self.label_map:
             raise ValueError(f"Label {label_str} not found in label map.")
-        
+        label_index = self.label_map[label_str]
+
         if self.transform:
             img = self.transform(img)
         else:
