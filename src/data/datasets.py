@@ -29,7 +29,7 @@ class PlantDiseaseDataset(Dataset):
         except FileNotFoundError:
             raise FileNotFoundError(f"Image file not found at {img_path}.")
         except Exception as e:
-            raise IOError(f"Error opening image file: {e}.")
+            raise RuntimeError(f"Error loading image {img_path}: {e}.")
 
         label_index = config.LABEL_MAP.get(label_str)
         if label_index is None:
@@ -42,4 +42,4 @@ class PlantDiseaseDataset(Dataset):
 
         return img, torch.tensor(label_index, dtype=torch.long)
 
-print("PlantVillageDataset class defined.")
+# print("PlantVillageDataset class defined.")

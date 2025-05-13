@@ -3,62 +3,68 @@ import numpy as np
 import pandas as pd
 from torch.utils.data import WeightedRandomSampler
 
-def calculate_class_weights(dataframe: pd.DataFrame, label_map: dict):
+def _inverse_frequency_map(dataframe: pd.DataFrame, label_map: dict) -> dict:
     """
-    Calculates the class weights inversely proportional to class frequency, scaled by num_classes.
+    Computes inverse frequency weight for each class label based on sample counts.
+    Returns a mapping from label to inverse frequency weight.
+    """
+    # Count samples per class in the dataframe
+    class_counts = dataframe['label'].value_counts().to_dict()
+    total_samples = len(dataframe)
+    
+    # Inverse frequency: total_samples / class_count
+    inv_freq = {label: total_samples / count
+                for label, count in class_counts.items() if count > 0}
+    
+    # Ensure every label in label_map has an entry (default weight 1.0)
+    for label in label_map:
+        inv_freq.setdefault(label, 1.0)
+    
+    return inv_freq
+
+
+def calculate_class_weights(dataframe: pd.DataFrame, label_map: dict) -> torch.Tensor:
+    """
+    Calculates class weights tensor for loss, inversely proportional to class frequency
+    and normalized by the number of classes.
     """
     print("Calculating class weights for loss function...")
-    class_counts = dataframe['label'].value_counts().sort_index()
     num_classes = len(label_map)
-    total_samples = len(dataframe)
+    inv_freq_map = _inverse_frequency_map(dataframe, label_map)
 
-    class_weights = total_samples / (num_classes * class_counts)
+    # Build weights tensor where index = class index
+    weights = [inv_freq_map[label] / num_classes for label in label_map]
+    weights_tensor = torch.tensor(weights, dtype=torch.float32)
 
-    weights_tensor = torch.zeros(num_classes, dtype=torch.float32)
-    for label, index in label_map.items():
-        if label in class_weights.index:
-            weights_tensor[index] = class_weights[label]
-        else:
-            print(f"Warning (calculate_class_weights): Class '{label}' not found in this DataFrame split. Assigning loss weight 1.0.")
-            weights_tensor[index] = 1.0
-
-    print(f"Class weights calculation complete.")
+    print("Class weights calculation complete.")
     return weights_tensor
 
 
-def create_sampler(dataframe: pd.DataFrame, label_map: dict):
+def create_sampler(dataframe: pd.DataFrame, label_map: dict) -> WeightedRandomSampler:
     """
-    Creates a WeightedRandomSampler using inverse frequency weighting for samples.
+    Creates a WeightedRandomSampler to address class imbalance by sampling
+    inversely proportional to class frequency.
     """
     print("Creating WeightedRandomSampler...")
+    # Compute inverse frequency map
+    inv_freq_map = _inverse_frequency_map(dataframe, label_map)
 
-    class_counts = dataframe['label'].value_counts()
-    num_samples = len(dataframe)
+    # Map each sample's label to its weight
+    sample_weights = dataframe['label'].map(inv_freq_map).to_numpy(dtype=np.float64)
 
-    class_weights_map = {label: num_samples / count for label, count in class_counts.items()}
-
-    try:
-        sample_weights = dataframe['label'].map(class_weights_map).to_numpy()
-    except Exception as e:
-         print(f"Error mapping sampler weights: {e}. Check if all labels in dataframe exist in class_counts.")
-         sample_weights = np.ones(len(dataframe))
-
-
-    # Added this from the internet to fix errors with NaN values
+    # Handle any unexpected NaNs by replacing with median weight
     if np.isnan(sample_weights).any():
-        print("Warning: NaN sample weights detected. This might occur if labels in the DataFrame are missing from class_counts.")
-        median_weight = np.nanmedian(sample_weights) if not np.all(np.isnan(sample_weights)) else 1.0
+        median_weight = np.nanmedian(sample_weights)
         sample_weights = np.nan_to_num(sample_weights, nan=median_weight)
-        print(f"Replaced NaN sample weights with: {median_weight:.2f}")
+        print(f"Warning: NaN sample weights detected. Replaced with median weight {median_weight:.2f}.")
 
-
-    sample_weights_tensor = torch.from_numpy(sample_weights).double()
+    # Create tensor of sample weights
+    sample_weights_tensor = torch.from_numpy(sample_weights)
 
     sampler = WeightedRandomSampler(
         weights=sample_weights_tensor,
         num_samples=len(sample_weights_tensor),
         replacement=True
     )
-    print(f"WeightedRandomSampler created.")
+    print("WeightedRandomSampler created.")
     return sampler
-    
