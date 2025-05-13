@@ -6,10 +6,12 @@ import numpy as np
 PROJECT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 RAW_DATA_DIR = os.path.join(PROJECT_ROOT, 'data', 'raw', 'color')
 OUTPUT_DIR = os.path.join(PROJECT_ROOT, 'outputs')
+LOG_DIR = os.path.join(PROJECT_ROOT, 'logs')
 PLOTS_DIR = os.path.join(OUTPUT_DIR, 'plots')
 MODELS_DIR = os.path.join(OUTPUT_DIR, 'models')
 
 # Creating data directories in case we run it for the first time later after cloning (moving to Habrok)
+os.makedirs(LOG_DIR, exist_ok=True)
 os.makedirs(PLOTS_DIR, exist_ok=True)
 os.makedirs(MODELS_DIR, exist_ok=True)
 

@@ -11,7 +11,11 @@ class FocalLoss(nn.Module):
     def __init__(self, alpha=None, gamma: float = 2.0, reduction: str = "mean"):
         super().__init__()
         if alpha is not None:
-            self.alpha = torch.tensor(alpha, dtype=torch.float32)
+            # Wrote this to fix warning
+            if isinstance(alpha, torch.Tensor):
+                self.alpha = alpha.detach().clone().float()
+            else:
+                self.alpha = torch.as_tensor(alpha, dtype=torch.float32)
         else:
             self.alpha = None
         
