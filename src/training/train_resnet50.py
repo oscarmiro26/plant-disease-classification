@@ -100,7 +100,7 @@ def train_and_evaluate():
     # Loss, optimizer, scheduler
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam([
-        {'params': model.fc.parameters(), 'lr': LR_CLASSIFIER}
+        {'params': model.fc.parameters(), 'lr': LR_CLASSIFIER},
     ])
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
 
