@@ -21,7 +21,6 @@ class FocalLoss(nn.Module):
         
         self.gamma = gamma
         self.reduction = reduction
-        self.eps = 1e-8
 
     def forward(self, logits: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
         if self.alpha is not None:
