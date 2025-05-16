@@ -1,5 +1,4 @@
 import os
-import logging
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -8,17 +7,19 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 import torchvision.models as models
-# Use the new weights enum for pretrained weights
 from torchvision.models import ResNet50_Weights
 from sklearn.metrics import confusion_matrix, classification_report, precision_recall_fscore_support
 
 from ..data.splitting import create_splits
 from ..data.datasets import PlantDiseaseDataset
 from ..training import config
+from ..training.losses import FocalLoss
+from ..data.sampler import calculate_class_weights, create_sampler
+from ..utils.logger import setup_logger
 
 # Hyperparameters
 BATCH_SIZE        = 64
-NUM_EPOCHS        = 30
+NUM_EPOCHS        = 50
 NUM_WORKERS       = 4
 # Learning rates
 LR_CLASSIFIER     = 1e-3
@@ -30,25 +31,15 @@ UNFREEZE_L3_AT    = 10
 # LR scheduler
 STEP_SIZE         = 7
 GAMMA             = 0.1
+# Mixing sampler
+MIX_ALPHA         = 0.7
+PATIENCE          = 10
 
 # Logging setup
-LOG_BASE = os.path.join(config.LOG_DIR, "resnet50")
-os.makedirs(LOG_BASE, exist_ok=True)
-existing = [d for d in os.listdir(LOG_BASE) if os.path.isdir(os.path.join(LOG_BASE, d))]
-run_idx  = len(existing)
-run_name = f"ResNet50_gradual_{run_idx}"
-RUN_DIR  = os.path.join(LOG_BASE, run_name)
-os.makedirs(RUN_DIR, exist_ok=True)
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(os.path.join(RUN_DIR, "train.log")),
-        logging.StreamHandler()
-    ]
+logger, RUN_DIR = setup_logger(
+    model_name="resnet50",
+    base_log_dir=config.LOG_DIR
 )
-logger = logging.getLogger('train')
-print(f"Logging to {RUN_DIR}")
 
 # Transforms for 256x256 images
 train_transform = transforms.Compose([
@@ -67,7 +58,7 @@ val_transform = transforms.Compose([
 ])
 
 def train_and_evaluate():
-    logger.info(f"Starting run {run_name}.")
+    logger.info(f"Starting training run.")
 
     # Data splits
     train_df, val_df, test_df = create_splits(
@@ -77,32 +68,74 @@ def train_and_evaluate():
         val_size  = config.VALIDATION_SPLIT_SIZE,
     )
 
+    # Calculating class weights
+    class_weights = calculate_class_weights(train_df, config.LABEL_MAP).to(config.DEVICE)
+    train_sampler = create_sampler(
+        train_df, 
+        config.LABEL_MAP,
+        use_mixing_sampler=True,
+        alpha=MIX_ALPHA
+    )
+
     # Datasets + loaders
     train_ds  = PlantDiseaseDataset(train_df, transform=train_transform)
     val_ds    = PlantDiseaseDataset(val_df,   transform=val_transform)
     test_ds   = PlantDiseaseDataset(test_df,  transform=val_transform)
-    train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True,  num_workers=NUM_WORKERS)
-    val_loader   = DataLoader(val_ds,   batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
-    test_loader  = DataLoader(test_ds,  batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
+
+    # Creating data loaders
+    train_loader = DataLoader(
+        train_ds, 
+        batch_size=BATCH_SIZE, 
+        sampler=train_sampler,
+        num_workers=NUM_WORKERS
+    )
+
+    val_loader = DataLoader(
+        val_ds, 
+        batch_size=BATCH_SIZE, 
+        shuffle=False, 
+        num_workers=NUM_WORKERS
+    ) 
+    
+    test_loader = DataLoader(
+        test_ds, 
+        batch_size=BATCH_SIZE, 
+        shuffle=False, 
+        num_workers=NUM_WORKERS
+    ) 
 
     # Model: ResNet50 with pretrained weights
     # Use the default pretrained ImageNet weights
     model = models.resnet50(weights=ResNet50_Weights.DEFAULT)
     # Freeze all layers except head
-    for name, param in model.named_parameters():
+    for _, param in model.named_parameters():
         param.requires_grad = False
+
     num_ftrs = model.fc.in_features
+    # Old head
     model.fc = nn.Linear(num_ftrs, config.NUM_CLASSES)
+    
+    # New head
+    """ model.fc = nn.Sequential(
+        nn.Linear(num_ftrs, 512),
+        nn.ReLU(inplace=True),
+        nn.Dropout(0.5),
+        nn.Linear(512, config.NUM_CLASSES)
+    ) """
+
     for param in model.fc.parameters():
         param.requires_grad = True
     model = model.to(config.DEVICE)
 
     # Loss, optimizer, scheduler
-    criterion = nn.CrossEntropyLoss()
+    criterion = FocalLoss(alpha=class_weights, gamma=2.0, reduction='mean')
     optimizer = torch.optim.Adam([
         {'params': model.fc.parameters(), 'lr': LR_CLASSIFIER},
     ])
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
+
+    best_val_loss = float('inf')
+    patience_counter = 0
 
     train_losses, val_losses = [], []
     for epoch in range(1, NUM_EPOCHS + 1):
@@ -147,8 +180,18 @@ def train_and_evaluate():
         scheduler.step()
         logger.info(f"Epoch {epoch:02d} | Train: {epoch_train_loss:.4f} | Val: {epoch_val_loss:.4f}")
 
+        # Early stopiing
+        if epoch_val_loss < best_val_loss:
+            best_val_loss = epoch_val_loss
+            patience_counter = 0
+        else:
+            patience_counter += 1
+            if patience_counter >= PATIENCE:
+                logger.info(f"Early stopping triggered at epoch {epoch} (no improvement for {PATIENCE} epochs).")
+                break
+
     # Save final model
-    torch.save(model.state_dict(), os.path.join(RUN_DIR, 'resnet50_gradual.pth'))
+    torch.save(model.state_dict(), os.path.join(RUN_DIR, 'resnet50.pth'))
     # Plot losses
     plt.figure()
     plt.plot(range(1, len(train_losses)+1), train_losses, label='Train')
