@@ -114,15 +114,15 @@ def train_and_evaluate():
 
     num_ftrs = model.fc.in_features
     # Old head
-    model.fc = nn.Linear(num_ftrs, config.NUM_CLASSES)
+    # model.fc = nn.Linear(num_ftrs, config.NUM_CLASSES)
     
     # New head
-    """ model.fc = nn.Sequential(
+    model.fc = nn.Sequential(
         nn.Linear(num_ftrs, 512),
         nn.ReLU(inplace=True),
         nn.Dropout(0.5),
         nn.Linear(512, config.NUM_CLASSES)
-    ) """
+    )
 
     for param in model.fc.parameters():
         param.requires_grad = True

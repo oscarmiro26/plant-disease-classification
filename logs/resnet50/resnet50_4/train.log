@@ -1,0 +1,100 @@
+2025-05-17 16:53:15,257 [INFO] Created logger with run_dir: /home3/s5238366/plant-disease-classification/src/training/../../logs/resnet50/resnet50_4
+2025-05-17 16:53:15,258 [INFO] Starting training run.
+2025-05-17 16:55:56,131 [INFO] Epoch 01 | Train: 0.5444 | Val: 0.2691
+2025-05-17 16:58:26,829 [INFO] Epoch 02 | Train: 0.2663 | Val: 0.1985
+2025-05-17 17:00:51,187 [INFO] Epoch 03 | Train: 0.2190 | Val: 0.1875
+2025-05-17 17:03:15,977 [INFO] Epoch 04 | Train: 0.1977 | Val: 0.1646
+2025-05-17 17:03:15,978 [INFO] Unfroze layer4 at epoch 5 with lr=0.0001.
+2025-05-17 17:05:53,140 [INFO] Epoch 05 | Train: 0.1226 | Val: 0.0721
+2025-05-17 17:08:30,700 [INFO] Epoch 06 | Train: 0.0799 | Val: 0.0486
+2025-05-17 17:11:07,476 [INFO] Epoch 07 | Train: 0.0649 | Val: 0.0416
+2025-05-17 17:13:36,368 [INFO] Epoch 08 | Train: 0.0526 | Val: 0.0353
+2025-05-17 17:16:12,223 [INFO] Epoch 09 | Train: 0.0477 | Val: 0.0297
+2025-05-17 17:16:12,224 [INFO] Unfroze layer3 at epoch 10 with lr=1e-05.
+2025-05-17 17:18:53,307 [INFO] Epoch 10 | Train: 0.0448 | Val: 0.0289
+2025-05-17 17:21:34,792 [INFO] Epoch 11 | Train: 0.0409 | Val: 0.0259
+2025-05-17 17:24:17,775 [INFO] Epoch 12 | Train: 0.0365 | Val: 0.0257
+2025-05-17 17:27:01,134 [INFO] Epoch 13 | Train: 0.0353 | Val: 0.0247
+2025-05-17 17:29:45,368 [INFO] Epoch 14 | Train: 0.0345 | Val: 0.0219
+2025-05-17 17:32:25,093 [INFO] Epoch 15 | Train: 0.0317 | Val: 0.0218
+2025-05-17 17:35:07,852 [INFO] Epoch 16 | Train: 0.0315 | Val: 0.0200
+2025-05-17 17:37:48,665 [INFO] Epoch 17 | Train: 0.0316 | Val: 0.0225
+2025-05-17 17:40:35,232 [INFO] Epoch 18 | Train: 0.0302 | Val: 0.0231
+2025-05-17 17:43:22,879 [INFO] Epoch 19 | Train: 0.0309 | Val: 0.0209
+2025-05-17 17:46:04,597 [INFO] Epoch 20 | Train: 0.0299 | Val: 0.0231
+2025-05-17 17:48:45,278 [INFO] Epoch 21 | Train: 0.0293 | Val: 0.0198
+2025-05-17 17:51:30,394 [INFO] Epoch 22 | Train: 0.0280 | Val: 0.0207
+2025-05-17 17:54:10,654 [INFO] Epoch 23 | Train: 0.0307 | Val: 0.0221
+2025-05-17 17:56:47,168 [INFO] Epoch 24 | Train: 0.0304 | Val: 0.0191
+2025-05-17 17:59:31,748 [INFO] Epoch 25 | Train: 0.0300 | Val: 0.0198
+2025-05-17 18:02:14,007 [INFO] Epoch 26 | Train: 0.0285 | Val: 0.0210
+2025-05-17 18:04:54,017 [INFO] Epoch 27 | Train: 0.0293 | Val: 0.0210
+2025-05-17 18:07:33,712 [INFO] Epoch 28 | Train: 0.0286 | Val: 0.0202
+2025-05-17 18:10:13,241 [INFO] Epoch 29 | Train: 0.0296 | Val: 0.0204
+2025-05-17 18:12:55,236 [INFO] Epoch 30 | Train: 0.0288 | Val: 0.0196
+2025-05-17 18:15:34,981 [INFO] Epoch 31 | Train: 0.0298 | Val: 0.0186
+2025-05-17 18:18:20,604 [INFO] Epoch 32 | Train: 0.0292 | Val: 0.0209
+2025-05-17 18:21:07,476 [INFO] Epoch 33 | Train: 0.0286 | Val: 0.0222
+2025-05-17 18:23:49,402 [INFO] Epoch 34 | Train: 0.0288 | Val: 0.0188
+2025-05-17 18:26:29,669 [INFO] Epoch 35 | Train: 0.0302 | Val: 0.0218
+2025-05-17 18:29:11,767 [INFO] Epoch 36 | Train: 0.0287 | Val: 0.0215
+2025-05-17 18:31:52,334 [INFO] Epoch 37 | Train: 0.0282 | Val: 0.0197
+2025-05-17 18:34:29,767 [INFO] Epoch 38 | Train: 0.0296 | Val: 0.0217
+2025-05-17 18:37:09,158 [INFO] Epoch 39 | Train: 0.0289 | Val: 0.0204
+2025-05-17 18:39:56,840 [INFO] Epoch 40 | Train: 0.0292 | Val: 0.0201
+2025-05-17 18:42:35,891 [INFO] Epoch 41 | Train: 0.0287 | Val: 0.0215
+2025-05-17 18:42:35,891 [INFO] Early stopping triggered at epoch 41 (no improvement for 10 epochs).
+2025-05-17 18:43:04,667 [INFO] Confusion Matrix:
+[[ 93   0   0 ...   0   0   0]
+ [  0  93   0 ...   0   0   0]
+ [  0   0  41 ...   0   0   0]
+ ...
+ [  0   0   0 ... 790   0   0]
+ [  0   0   0 ...   0  56   0]
+ [  0   0   0 ...   0   0 239]]
+2025-05-17 18:43:04,668 [INFO] Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     0.9894    0.9894    0.9894        94
+                                 Apple___Black_rot     1.0000    1.0000    1.0000        93
+                          Apple___Cedar_apple_rust     1.0000    1.0000    1.0000        41
+                                   Apple___healthy     0.9800    0.9919    0.9859       247
+                               Blueberry___healthy     1.0000    0.9867    0.9933       225
+          Cherry_(including_sour)___Powdery_mildew     1.0000    0.9937    0.9968       158
+                 Cherry_(including_sour)___healthy     1.0000    0.9844    0.9921       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.8539    0.9870    0.9157        77
+                       Corn_(maize)___Common_rust_     1.0000    0.9832    0.9915       179
+               Corn_(maize)___Northern_Leaf_Blight     0.9856    0.9257    0.9547       148
+                            Corn_(maize)___healthy     1.0000    1.0000    1.0000       174
+                                 Grape___Black_rot     1.0000    1.0000    1.0000       177
+                      Grape___Esca_(Black_Measles)     1.0000    1.0000    1.0000       207
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     1.0000    1.0000    1.0000       161
+                                   Grape___healthy     1.0000    1.0000    1.0000        63
+          Orange___Haunglongbing_(Citrus_greening)     1.0000    1.0000    1.0000       826
+                            Peach___Bacterial_spot     0.9914    1.0000    0.9957       345
+                                   Peach___healthy     1.0000    0.9815    0.9907        54
+                     Pepper,_bell___Bacterial_spot     0.9933    0.9933    0.9933       150
+                            Pepper,_bell___healthy     0.9865    0.9910    0.9888       222
+                             Potato___Early_blight     1.0000    1.0000    1.0000       150
+                              Potato___Late_blight     1.0000    0.9333    0.9655       150
+                                  Potato___healthy     0.9167    0.9565    0.9362        23
+                               Raspberry___healthy     1.0000    1.0000    1.0000        56
+                                 Soybean___healthy     0.9974    0.9987    0.9980       764
+                           Squash___Powdery_mildew     1.0000    1.0000    1.0000       275
+                          Strawberry___Leaf_scorch     1.0000    1.0000    1.0000       166
+                              Strawberry___healthy     1.0000    1.0000    1.0000        68
+                           Tomato___Bacterial_spot     0.9634    0.9906    0.9768       319
+                             Tomato___Early_blight     0.9545    0.9800    0.9671       150
+                              Tomato___Late_blight     0.9684    0.9650    0.9667       286
+                                Tomato___Leaf_Mold     0.9929    0.9790    0.9859       143
+                       Tomato___Septoria_leaf_spot     0.9925    0.9887    0.9906       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.9784    0.9044    0.9400       251
+                              Tomato___Target_Spot     0.9132    0.9479    0.9302       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     1.0000    0.9826    0.9912       804
+                      Tomato___Tomato_mosaic_virus     1.0000    1.0000    1.0000        56
+                                  Tomato___healthy     0.9087    1.0000    0.9522       239
+
+                                          accuracy                         0.9864      8146
+                                         macro avg     0.9833    0.9851    0.9839      8146
+                                      weighted avg     0.9870    0.9864    0.9864      8146
+
