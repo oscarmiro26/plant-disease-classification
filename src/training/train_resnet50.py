@@ -9,6 +9,7 @@ import torchvision.transforms as transforms
 import torchvision.models as models
 from torchvision.models import ResNet50_Weights
 from sklearn.metrics import confusion_matrix, classification_report, precision_recall_fscore_support
+from balanced_loss import Loss  # see: https://github.com/fcakyon/balanced-loss
 
 from ..data.splitting import create_splits
 from ..data.datasets import PlantDiseaseDataset
@@ -128,7 +129,17 @@ def train_and_evaluate():
     model = model.to(config.DEVICE)
 
     # Loss, optimizer, scheduler
-    criterion = FocalLoss(alpha=class_weights, gamma=2.0, reduction='mean')
+    """
+    Trying https://github.com/fcakyon/balanced-loss, which implements https://arxiv.org/abs/1901.05555
+    Class-Balanced Loss Based on Effective Number of Samples
+    """
+    samples_per_class = [train_df['label'].tolist().count(label) for label in config.LABEL_MAP.keys()]
+    criterion = Loss(
+        loss_type="focal_loss",
+        samples_per_class=samples_per_class,
+        class_balanced=True
+    )
+
     optimizer = torch.optim.Adam([
         {'params': model.fc.parameters(), 'lr': LR_CLASSIFIER},
     ])
