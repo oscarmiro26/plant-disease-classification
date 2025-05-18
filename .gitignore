@@ -176,6 +176,6 @@ cython_debug/
 
 # Custom
 /data
-/logs
 *.out
 *.sh
+*.pkl

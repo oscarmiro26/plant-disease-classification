@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn import svm
 from sklearn.metrics import classification_report, confusion_matrix, precision_recall_fscore_support
-from sklearn.model_selection import GridSearchCV, cross_val_score
+from sklearn.model_selection import GridSearchCV
 from skimage.feature import hog, local_binary_pattern
 import joblib
 import torchvision.transforms as transforms
@@ -15,7 +15,7 @@ from ..utils.logger import setup_logger
 
 # SVM Hyperparameters (Grid Search)
 PARAM_GRID = {
-    'C': [0.1, 1, 10],
+    'C': [0.001, 0.01, 0.1, 1, 10],
     'gamma': ['scale', 'auto', 0.001, 0.0001],
     'kernel': ['rbf']
 }
@@ -28,14 +28,13 @@ logger, RUN_DIR = setup_logger(
 
 # Transforms for image data - consistent for SVM feature extraction
 data_transform = transforms.Compose([
-    transforms.Resize(256),
-    transforms.CenterCrop(224),
-    transforms.Grayscale(),
     transforms.ToTensor(),
 ])
 
 def extract_features(image):
-    # Example HOG features
+    """
+    Extracts Histogram of Oriented Gradients (HOG) and Local Binary Pattern (LBP) features from an image. Concatenates them into a single feature vector.
+    """
     hog_features = hog(image, orientations=8, pixels_per_cell=(16,16),
                       cells_per_block=(1,1), visualize=False)
     # Example LBP features
@@ -94,19 +93,22 @@ def train_and_evaluate():
     X_test, y_test = load_and_prepare_data(test_ds)
     logger.info(f"Test data shape: Features {X_test.shape}, Labels {y_test.shape}")
 
+    logger.info("Data preparation complete. Commencing SVM training...")
     # Model: Support Vector Machine Classifier
     grid_search = GridSearchCV(
         svm.SVC(class_weight='balanced', random_state=42),
         PARAM_GRID,
         cv=5,  # 5-fold cross-validation
         n_jobs=-1,
-        verbose=2
+        verbose=3,
+        return_train_score=True,
     )
     grid_search.fit(X_train, y_train)
     best_model = grid_search.best_estimator_
     best_c = grid_search.best_params_['C']
     best_gamma = grid_search.best_params_['gamma']
     
+    logger.info("Grid search complete.")
     logger.info(f"Best parameters found: C={best_c}, gamma={best_gamma}")
     logger.info(f"Best cross-validation score: {grid_search.best_score_:.4f}")
     # Training
@@ -115,7 +117,8 @@ def train_and_evaluate():
     logger.info("SVM training complete.")
 
     # Save the trained model
-    model_filename = f'svm_{best_c}_{best_gamma}.pkl'
+    model_name = f'svm_model_{best_c}_{best_gamma}'
+    model_filename = f'{model_name}.pkl'
     model_path = os.path.join(RUN_DIR, model_filename)
     joblib.dump(best_model, model_path)
     logger.info(f"SVM model saved to {model_path}")
@@ -152,9 +155,22 @@ def train_and_evaluate():
         'f1-score': f1,
         'support': sup
     })
-    metrics_path = os.path.join(RUN_DIR, 'svm_metrics.csv')
+
+    metrics_file_name = f'{model_name}_classification_metrics.csv'
+    metrics_path = os.path.join(RUN_DIR, metrics_file_name)
     metrics_df.to_csv(metrics_path, index=False)
     logger.info(f"Metrics saved to {metrics_path}")
+
+    # Save confusion matrix as CSV
+    cm_df = pd.DataFrame(
+        cm,
+        index=[config.INV_LABEL_MAP[i] for i in range(config.NUM_CLASSES)],
+        columns=[config.INV_LABEL_MAP[i] for i in range(config.NUM_CLASSES)]
+    )
+    cm_file_name = f'{model_name}_confusion_matrix.csv'
+    cm_csv = os.path.join(RUN_DIR, cm_file_name)
+    cm_df.to_csv(cm_csv)
+    logger.info(f"Confusion matrix saved to {cm_csv}")
     logger.info("SVM run finished.")
 
 if __name__ == "__main__":
