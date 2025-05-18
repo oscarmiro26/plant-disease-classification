@@ -61,7 +61,7 @@ def train_and_evaluate():
 
     # Resize for computational efficiency
     data_transform = T.Compose([
-        T.Resize((128, 128)),
+        T.Resize((64, 64)),
         T.ToTensor(),
     ])
     train_ds = PlantDiseaseDataset(train_df, transform=data_transform)
