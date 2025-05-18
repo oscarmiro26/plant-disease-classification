@@ -1,23 +1,26 @@
 import os
 import pandas as pd
 import numpy as np
-from sklearn import svm
+from tqdm import tqdm
+from tqdm_joblib import tqdm_joblib
+from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix, precision_recall_fscore_support
-from sklearn.model_selection import GridSearchCV
-from skimage.feature import hog, local_binary_pattern
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import GridSearchCV, ParameterGrid
+from sklearn.pipeline import Pipeline
+from sklearn.decomposition import PCA
 import joblib
-import torchvision.transforms as transforms
+import torchvision.transforms as T
 
 from ..data.splitting import create_splits
 from ..data.datasets import PlantDiseaseDataset
 from ..training import config
 from ..utils.logger import setup_logger
 
-# SVM Hyperparameters (Grid Search)
+
 PARAM_GRID = {
-    'C': [0.001, 0.01, 0.1, 1, 10],
-    'gamma': ['scale', 'auto', 0.001, 0.0001],
-    'kernel': ['rbf']
+    'svc__C': [0.001, 0.01, 0.1, 1, 10],
+    'svc__gamma': ['scale', 'auto', 0.001, 0.0001],
 }
 
 # Logging setup
@@ -26,48 +29,26 @@ logger, RUN_DIR = setup_logger(
     base_log_dir=config.LOG_DIR
 )
 
-# Transforms for image data - consistent for SVM feature extraction
-data_transform = transforms.Compose([
-    transforms.ToTensor(),
-])
-
-def extract_features(image):
-    """
-    Extracts Histogram of Oriented Gradients (HOG) and Local Binary Pattern (LBP) features from an image. Concatenates them into a single feature vector.
-    """
-    hog_features = hog(image, orientations=8, pixels_per_cell=(16,16),
-                      cells_per_block=(1,1), visualize=False)
-    # Example LBP features
-    lbp = local_binary_pattern(image, P=8, R=1, method='uniform')
-    hist, _ = np.histogram(lbp, bins=np.arange(0, 10))
-    return np.concatenate([hog_features, hist])
-
 def load_and_prepare_data(dataset: PlantDiseaseDataset):
-    """Loads all data from a PlantDiseaseDataset and prepares it for SVM."""
-    all_features = []
+    """Loading and preprocessing (normalization/standardization)."""
+    all_images = []
     all_labels = []
     logger.info(f"Loading {len(dataset)} samples...")
-    for i in range(len(dataset)):
-        img_tensor, label = dataset[i]
-
-        # Feature extraction
-        image_np = img_tensor.squeeze(0).numpy() # Convert to 2D np array
-        features = extract_features(image_np)
-
-        # Flatten the image tensor to create a feature vector
-        all_features.append(features)
+    for img, label in tqdm(dataset, desc="Loading images"):
+        img = img.numpy().astype(np.float32) / 255.0
+        # Flatten into 1D feature vector
+        all_images.append(img.reshape(-1))
         all_labels.append(label)
-        if (i + 1) % 500 == 0: # Log progress
-            logger.info(f"Loaded {i+1}/{len(dataset)} samples.")
-    
-    return np.array(all_features), np.array(all_labels)
+    X = np.stack(all_images, axis=0)
+    y = np.array(all_labels)
+    return X, y
 
 def train_and_evaluate():
     logger.info(f"Starting SVM training and evaluation run in {RUN_DIR}")
+    logger.info(f"Parameter grid: {PARAM_GRID}")
 
     # Data splits
-    # We'll use train_df for training and test_df for final evaluation.
-    # val_df could be used for hyperparameter tuning if implemented separately.
+    # We'll concatenate val_df with train_df for training w/ k-fold and test_df for final evaluation.
     logger.info("Creating data splits...")
     train_df, val_df, test_df = create_splits(
         data_dir=config.RAW_DATA_DIR,
@@ -75,12 +56,14 @@ def train_and_evaluate():
         test_size=config.TEST_SPLIT_SIZE,
         val_size=config.VALIDATION_SPLIT_SIZE,
     )
-
-    # Combine train and validation sets for SVM training
     train_df = pd.concat([train_df, val_df], ignore_index=True)
-
-    # Datasets
     logger.info("Creating datasets...")
+
+    # Resize for computational efficiency
+    data_transform = T.Compose([
+        T.Resize((128, 128)),
+        T.ToTensor(),
+    ])
     train_ds = PlantDiseaseDataset(train_df, transform=data_transform)
     test_ds  = PlantDiseaseDataset(test_df,  transform=data_transform)
 
@@ -94,23 +77,38 @@ def train_and_evaluate():
     logger.info(f"Test data shape: Features {X_test.shape}, Labels {y_test.shape}")
 
     logger.info("Data preparation complete. Commencing SVM training...")
-    # Model: Support Vector Machine Classifier
+
+    # Instantiate the SVM pipeline
+    pipeline = Pipeline([
+        ('scaler', StandardScaler()),               
+        ('pca',    PCA(n_components=200)),                          
+        ('svc',    SVC(class_weight='balanced', cache_size=5000, kernel='rbf'))
+    ])
+
+    # Grid search for hyperparameter tuning
     grid_search = GridSearchCV(
-        svm.SVC(class_weight='balanced', random_state=42),
+        pipeline,
         PARAM_GRID,
-        cv=5,  # 5-fold cross-validation
+        cv=5,
         n_jobs=-1,
         verbose=3,
         return_train_score=True,
     )
-    grid_search.fit(X_train, y_train)
-    best_model = grid_search.best_estimator_
-    best_c = grid_search.best_params_['C']
-    best_gamma = grid_search.best_params_['gamma']
-    
+
+    # Fit the model using GridSearchCV using tqdm_joblib for progress bar
+    n_candidates = len(list(ParameterGrid(PARAM_GRID)))
+    total_fits   = n_candidates * grid_search.cv
+    with tqdm_joblib(tqdm(desc="GridSearchCV", total=total_fits)):
+        grid_search.fit(X_train, y_train)
+
     logger.info("Grid search complete.")
-    logger.info(f"Best parameters found: C={best_c}, gamma={best_gamma}")
-    logger.info(f"Best cross-validation score: {grid_search.best_score_:.4f}")
+    best_model = grid_search.best_estimator_
+    best_params = grid_search.best_params_
+    logger.info(f"Best parameters: {best_params}")
+    logger.info(f"Best CV score: {grid_search.best_score_:.4f}")
+    best_c = best_params['svc__C']
+    best_gamma = best_params['svc__gamma']
+
     # Training
     logger.info("Training SVM model...")
     best_model.fit(X_train, y_train)
@@ -175,5 +173,3 @@ def train_and_evaluate():
 
 if __name__ == "__main__":
     train_and_evaluate()
-
-
