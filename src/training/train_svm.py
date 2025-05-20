@@ -10,12 +10,25 @@ from sklearn.metrics import (
     confusion_matrix,
     precision_recall_fscore_support,
 )
+from sklearn.base import BaseEstimator
+from sklearn.feature_selection import (
+    VarianceThreshold,
+    SelectKBest,  
+    RFE,
+    f_classif,
+)
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV, ParameterGrid
 from sklearn.pipeline import Pipeline
 from sklearn.decomposition import PCA
 from skimage import color, measure, util
-from skimage.feature import hog, local_binary_pattern, graycomatrix, graycoprops
+from skimage.filters import gabor
+from skimage.feature import (
+    hog, 
+    local_binary_pattern, 
+    graycomatrix, 
+    graycoprops,
+)
 import joblib
 from joblib import Parallel, delayed
 import torchvision.transforms as T
@@ -37,25 +50,44 @@ PARAM_GRID = {
     'svc__gamma': ['scale', 'auto', 0.001, 0.0001],
 }
 
-def extract_features_1(image_np: np.ndarray) -> np.ndarray:
+class CorrelationFilter(BaseEstimator):
+    """
+    Drop features that have pairwise |corr| > threshold.
+    """
+    def __init__(self, threshold=0.9):
+        self.threshold = threshold
+
+    def fit(self, X, y=None):
+        # Compute absolute correlation matrix
+        corr = np.abs(np.corrcoef(X, rowvar=False))
+        # Find upper-triangle indices where corr > threshold
+        upper = np.triu_indices_from(corr, k=1)
+        to_drop = set()
+        for i, j in zip(*upper):
+            if corr[i, j] > self.threshold:
+                to_drop.add(j)
+        self.keep_idx_ = [i for i in range(X.shape[1]) if i not in to_drop]
+        return self
+
+    def transform(self, X):
+        return X[:, self.keep_idx_]
+    
+
+def extract_features_1(img: np.ndarray) -> np.ndarray:
     """
     Feature extraction #1: compute HOG and LBP descriptors from a single image.
-
+    Feature dimensions:
+    - HOG: 2048 features (8 orientations × 16 × 16)
+    - LBP: 10 features (10 bins)
+    Total: 2058 features.
     Args:
-        image_np (np.ndarray): Input image array. Can be 2D (H×W) or
+        img (np.ndarray): Input image array. Can be 2D (H×W) or
                                3D (C×H×W) for RGB data.
-
     Returns:
         np.ndarray: Concatenated 1D feature vector [hog_feats | lbp_hist].
     """
-    if image_np.ndim == 3:
-        # H×W×C
-        img = np.transpose(image_np, (1, 2, 0))
-        # skimage rgb2gray returns float image in [0, 1]
-        gray_img = color.rgb2gray(img)
-    else:
-        # already H×W
-        gray_img = image_np
+    # Convert to grayscale
+    gray_img = color.rgb2gray(img)
 
     # HOG on 2D gray image
     hog_feats = hog(gray_img, orientations=8,
@@ -74,11 +106,17 @@ def extract_features_1(image_np: np.ndarray) -> np.ndarray:
 
     return np.concatenate([hog_feats, lbp_hist])
 
-def extract_features_2(image_np: np.ndarray) -> np.ndarray:
+def extract_features_2(img: np.ndarray) -> np.ndarray:
     """
     Feature extraction #2: compute HSV histograms, GLCM texture stats,
     and shape descriptors from a single RGB image.
-
+    Feature dimensions:
+    - Color (HSV): 48 features (16 bins × 3 channels)
+    - Texture (GLCM): 16 features (4 angles × 4 stats)
+    - Shape: 11 features (lesion count, mean area, std area, mean perimeter,
+      area, perimeter, eccentricity, solidity, extent, major axis length,
+      aspect ratio)
+    Total: 75 features.
     Args:
         image_np (np.ndarray): Input RGB image array of shape (256, 256, 3).
 
@@ -86,16 +124,16 @@ def extract_features_2(image_np: np.ndarray) -> np.ndarray:
         np.ndarray: Concatenated feature vector [color | texture | shape].
     """
     # Ensure float in [0,1]
-    image = util.img_as_float(image_np)
+    image = util.img_as_float(img)
 
-    # 1. Color (HSV)
+    # Color (HSV)
     hsv = color.rgb2hsv(image, channel_axis=2)
     h_hist, _ = np.histogram(hsv[:, :, 0], bins=16, range=(0, 1), density=True)
     s_hist, _ = np.histogram(hsv[:, :, 1], bins=16, range=(0, 1), density=True)
     v_hist, _ = np.histogram(hsv[:, :, 2], bins=16, range=(0, 1), density=True)
     color_features = np.concatenate([h_hist, s_hist, v_hist])
 
-    # 2. Texture (GLCM)
+    # Texture (GLCM)
     gray = color.rgb2gray(image)
     gray_u8 = util.img_as_ubyte(gray)
     glcm = graycomatrix(
@@ -105,30 +143,83 @@ def extract_features_2(image_np: np.ndarray) -> np.ndarray:
         symmetric=True,
         normed=True,
     )
-    props = ["contrast", "dissimilarity", "homogeneity", "energy", "correlation", "ASM"]
+    props = ["contrast", "homogeneity", "energy", "correlation"]
     texture_features = np.hstack([graycoprops(glcm, p).flatten() for p in props])
 
-    # 3. Shape descriptors
+    # Shape descriptors
     binary = gray_u8 > 0
     regions = measure.regionprops(measure.label(binary))
-    if not regions:
-        shape_features = np.zeros(7, dtype=np.float32)
+    # Lesion count & size statistics
+    lesion_count = len(regions)
+    if lesion_count > 0:
+        areas     = np.array([r.area for r in regions], dtype=np.float32)
+        perims    = np.array([r.perimeter for r in regions], dtype=np.float32)
+        mean_area = areas.mean()
+        std_area  = areas.std()
+        mean_perim= perims.mean()
     else:
-        r = max(regions, key=lambda reg: reg.area)
-        area = r.area
-        perimeter = r.perimeter
-        ecc = r.eccentricity
-        solidity = r.solidity
-        extent = r.extent
-        maj = r.major_axis_length
-        min_ = r.minor_axis_length or 1.0
-        aspect = maj / min_
-        shape_features = np.array([area, perimeter, ecc, solidity, extent, maj, aspect], dtype=np.float32)
+        mean_area = std_area = mean_perim = 0.0
+
+    # Shape features from largest region
+    if regions:
+        r         = max(regions, key=lambda reg: reg.area)
+        area      = float(r.area)
+        perimeter = float(r.perimeter)
+        ecc       = float(r.eccentricity)
+        solidity  = float(r.solidity)
+        extent    = float(r.extent)
+        maj       = float(r.major_axis_length)
+        min_      = float(r.minor_axis_length or 1.0)
+        aspect    = maj / min_
+    else:
+        area = perimeter = ecc = solidity = extent = maj = aspect = 0.0
+
+    shape_features = np.array([
+        lesion_count, mean_area, std_area, mean_perim,
+        area, perimeter, ecc, solidity, extent, maj, aspect
+    ], dtype=np.float32)
 
     # Concatenate all features
     features = np.concatenate([color_features, texture_features, shape_features], axis=0)
 
     return features
+
+def extract_features_3(img: np.ndarray) -> np.ndarray:
+    """
+    Feature extraction #3: Compute Gabor filter and HSV histogram features.
+    Feature dimensions:
+    - Gabor: 32 features (4 frequencies × 4 orientations × 2 stats)
+    - HSV: 48 features (16 bins × 3 channels)
+    Total: 80 features.
+    Args:
+        image_np (np.ndarray): Input RGB image array of shape (256, 256, 3).
+    Returns:
+        np.ndarray: Concatenated feature vector [gabor | hsv].
+    """
+    # Convert image to float and grayscale for Gabor filter
+    gray = color.rgb2gray(util.img_as_float(img))
+    
+    # Gabor filter bank (4 frequencies × 4 orientations)
+    gabor_feats = []
+    frequencies = [0.1, 0.2, 0.3, 0.4]
+    thetas = [0, np.pi/4, np.pi/2, 3*np.pi/4]
+    for f in frequencies:
+        for theta in thetas:
+            filt_real, _ = gabor(gray, frequency=f, theta=theta)
+            gabor_feats.append(filt_real.mean())
+            gabor_feats.append(filt_real.std())
+    gabor_feats = np.array(gabor_feats)
+    
+    # HSV color histogram (16 bins per channel)
+    hsv = color.rgb2hsv(img)
+    h_hist, _ = np.histogram(hsv[..., 0], bins=16, range=(0,1), density=True)
+    s_hist, _ = np.histogram(hsv[..., 1], bins=16, range=(0,1), density=True)
+    v_hist, _ = np.histogram(hsv[..., 2], bins=16, range=(0,1), density=True)
+    color_feats = np.concatenate([h_hist, s_hist, v_hist])
+    
+    # Concatenate all features
+    return np.concatenate([gabor_feats, color_feats])
+
 
 def load_and_prepare_data(
     dataset: PlantDiseaseDataset,
@@ -150,6 +241,9 @@ def load_and_prepare_data(
     # helper to process one sample
     def _process(idx_img_lbl):
         img, lbl = idx_img_lbl
+        if img.ndim == 3:
+            # H×W×C
+            img = np.transpose(img, (1, 2, 0))
         arr = img.numpy().astype(np.float32)
         feats = feature_extraction_fn(arr)
         return feats, lbl
@@ -160,7 +254,6 @@ def load_and_prepare_data(
     )
 
     all_features, all_labels = zip(*results)
-
     X = np.stack(all_features, axis=0)
     y = np.array(all_labels)
     return X, y
@@ -194,17 +287,10 @@ def train_and_evaluate():
     train_df = pd.concat([train_df, val_df], ignore_index=True)
     logger.info("Creating datasets...")
 
-    # # Data Transform w/ feature extraction
     data_transform = T.Compose([
         T.Resize((256, 256)),
         T.ToTensor(),
     ])
-
-    # # Data transform w/o feature extraction
-    # data_transform = T.Compose([
-    #     T.Resize((64, 64)),
-    #     T.ToTensor(),
-    # ])
 
     train_ds = PlantDiseaseDataset(train_df, transform=data_transform)
     test_ds  = PlantDiseaseDataset(test_df,  transform=data_transform)
@@ -212,7 +298,9 @@ def train_and_evaluate():
     # feature_extraction_fn = extract_features_1
     # feature_extraction_fn.__name__ = "HOG_LBP" # Set the name for logging
     feature_extraction_fn = extract_features_2
-    feature_extraction_fn.__name__ = "GLCM_Shape_Color" # Set the name for logging
+    feature_extraction_fn.__name__ = "GLCM_Shape_HSV" # Set the name for logging
+    # feature_extraction_fn = extract_features_3
+    # feature_extraction_fn.__name__ = "Gabor_HSV" # Set the name for logging
 
     # Load and prepare data for SVM
     logger.info("Loading and preparing training data for SVM using feature extraction: %s", feature_extraction_fn.__name__)
@@ -225,13 +313,31 @@ def train_and_evaluate():
 
     logger.info("Data preparation complete. Commencing SVM training...")
 
-    # Scaler + SVM pipeline
+    # # Pipeline for feature extraction #1
+    # pipeline = Pipeline([
+    #     ('var_thresh',      VarianceThreshold(threshold=1e-3)),
+    #     ('corr_filter',     CorrelationFilter(threshold=0.9)),
+    #     ('univariate',      SelectKBest(f_classif, k=100)), # SelectKBest
+    #     ('scaler',          StandardScaler()),
+    #     ('rfe',             RFE(estimator=SVC(kernel="linear", 
+    #                                         max_iter=5000), n_features_to_select=75, step=0.1)),
+    #     ('pca',             PCA(n_components=0.95, whiten=True)),
+    #     ('svc',             SVC(class_weight='balanced', 
+    #                             cache_size=2000, kernel='rbf'))
+    # ])
+
+    # Pipeline for feature extraction #2 and #3
     pipeline = Pipeline([
-        ('scaler', StandardScaler()),               
-        ('svc', SVC(class_weight='balanced', cache_size=5000, kernel='rbf'))
+        ('var_thresh',      VarianceThreshold(threshold=1e-3)),
+        ('corr_filter',     CorrelationFilter(threshold=0.9)),
+        ('scaler',          StandardScaler()),        
+        ('pca',             PCA(n_components=0.95, whiten=True)),
+        ('svc',             SVC(class_weight='balanced', 
+                                cache_size=2000, kernel='rbf'))
     ])
 
     # Hyperparameter tuning
+    logger.info("Starting grid search for hyperparameter tuning...")
     grid_search = GridSearchCV(
         pipeline,
         PARAM_GRID,
@@ -241,7 +347,7 @@ def train_and_evaluate():
         return_train_score=True,
         pre_dispatch=f"{N_JOBS * 2}*n_jobs"   # throttle the number of launched jobs
     )
-    logger.info("Starting grid search for hyperparameter tuning...")
+    
     # Fit the model using GridSearchCV using tqdm_joblib for progress bar
     n_candidates = len(list(ParameterGrid(PARAM_GRID)))
     total_fits   = n_candidates * grid_search.cv

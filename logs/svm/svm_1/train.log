@@ -619,3 +619,387 @@ Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.6269    0.5455    0.583
 2025-05-19 00:36:37,602 [INFO] Metrics saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_10_scale_classification_metrics.csv
 2025-05-19 00:36:37,608 [INFO] Confusion matrix saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_10_scale_confusion_matrix.csv
 2025-05-19 00:36:37,608 [INFO] SVM run finished.
+2025-05-20 00:33:26,841 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 00:33:26,871 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 00:33:26,871 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 00:33:26,871 [INFO] Creating data splits...
+2025-05-20 00:43:20,713 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 00:43:20,756 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 00:43:20,756 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 00:43:20,756 [INFO] Creating data splits...
+2025-05-20 00:51:56,391 [INFO] Creating datasets...
+2025-05-20 00:51:56,433 [INFO] Loading and preparing training data for SVM...
+2025-05-20 01:09:11,933 [INFO] Training data shape: Features (45461, 3, 64, 64), Labels (45461,)
+2025-05-20 01:09:11,935 [INFO] Loading and preparing test data for SVM...
+2025-05-20 01:09:37,803 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 01:09:37,804 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 01:09:37,804 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 01:09:37,805 [INFO] Creating data splits...
+2025-05-20 01:10:35,674 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 01:10:35,676 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 01:10:35,676 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 01:10:35,676 [INFO] Creating data splits...
+2025-05-20 01:10:43,672 [INFO] Creating datasets...
+2025-05-20 01:10:43,675 [INFO] Loading and preparing training data for SVM...
+2025-05-20 01:11:44,128 [INFO] Test data shape: Features (8023, 3, 64, 64), Labels (8023,)
+2025-05-20 01:11:44,128 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 01:23:52,448 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 01:23:52,450 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 01:23:52,450 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 01:23:52,451 [INFO] Creating data splits...
+2025-05-20 01:23:53,640 [INFO] Creating datasets...
+2025-05-20 01:23:53,640 [INFO] Loading and preparing training data for SVM using feature extraction HOG_LBP
+2025-05-20 01:46:24,480 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 01:48:07,943 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 01:51:40,069 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 01:51:40,072 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 01:51:40,072 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 01:51:40,072 [INFO] Creating data splits...
+2025-05-20 01:51:41,335 [INFO] Creating datasets...
+2025-05-20 01:51:41,335 [INFO] Loading and preparing training data for SVM using feature extraction HOG_LBP
+2025-05-20 02:02:08,028 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:02:08,032 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:02:08,032 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 02:02:08,032 [INFO] Creating data splits...
+2025-05-20 02:02:09,334 [INFO] Creating datasets...
+2025-05-20 02:02:09,335 [INFO] Loading and preparing training data for SVM using feature extraction GLCM_Shape_Color
+2025-05-20 02:41:34,771 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:41:34,774 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:41:34,774 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 02:41:34,774 [INFO] Creating data splits...
+2025-05-20 02:41:35,978 [INFO] Creating datasets...
+2025-05-20 02:41:35,978 [INFO] Loading and preparing training data for SVM using feature extraction HOG_LBP
+2025-05-20 02:42:03,894 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:42:03,896 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:42:03,896 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 02:42:03,896 [INFO] Creating data splits...
+2025-05-20 02:42:05,104 [INFO] Creating datasets...
+2025-05-20 02:42:05,104 [INFO] Loading and preparing training data for SVM using feature extraction HOG_LBP
+2025-05-20 02:49:18,512 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:49:18,515 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:49:18,515 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 02:49:18,515 [INFO] Creating data splits...
+2025-05-20 02:49:19,713 [INFO] Creating datasets...
+2025-05-20 02:49:19,714 [INFO] Loading and preparing training data for SVM using feature extraction HOG_LBP
+2025-05-20 02:50:06,273 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:50:06,276 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:50:06,276 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 02:50:06,276 [INFO] Creating data splits...
+2025-05-20 02:50:07,567 [INFO] Creating datasets...
+2025-05-20 02:50:07,567 [INFO] Loading and preparing training data for SVM using feature extraction GLCM_Shape_Color
+2025-05-20 02:51:37,040 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-20 02:51:37,043 [INFO] Loading and preparing test data for SVM...
+2025-05-20 02:51:42,972 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:51:42,973 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 02:51:42,973 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 02:51:42,973 [INFO] Creating data splits...
+2025-05-20 02:51:44,318 [INFO] Creating datasets...
+2025-05-20 02:51:44,321 [INFO] Loading and preparing training data for SVM using feature extraction GLCM_Shape_Color
+2025-05-20 02:51:59,516 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-20 02:51:59,517 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 02:51:59,517 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-20 02:54:56,894 [INFO] Training data shape: Features (45461, 79), Labels (45461,)
+2025-05-20 02:54:56,896 [INFO] Loading and preparing test data for SVM...
+2025-05-20 02:55:43,561 [INFO] Test data shape: Features (8023, 79), Labels (8023,)
+2025-05-20 02:55:43,561 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 02:55:43,561 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-20 02:56:01,637 [INFO] Training data shape: Features (45461, 79), Labels (45461,)
+2025-05-20 02:56:01,638 [INFO] Loading and preparing test data for SVM...
+2025-05-20 02:56:45,873 [INFO] Test data shape: Features (8023, 79), Labels (8023,)
+2025-05-20 02:56:45,873 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 02:56:45,873 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-20 03:52:59,759 [INFO] Grid search complete.
+2025-05-20 03:52:59,761 [INFO] Best parameters: {'svc__C': 10, 'svc__gamma': 'scale'}
+2025-05-20 03:52:59,761 [INFO] Best CV score: 0.6404
+2025-05-20 03:52:59,762 [INFO] Training SVM model...
+2025-05-20 03:54:07,557 [INFO] SVM training complete.
+2025-05-20 03:54:07,617 [INFO] SVM model saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_GLCM_Shape_Color_10_scale.pkl
+2025-05-20 03:54:07,617 [INFO] Evaluating SVM model on the test set...
+2025-05-20 03:54:39,807 [INFO] Confusion Matrix:
+[[ 48   3   2 ...   1   0   0]
+ [  3  48   3 ...   1   0   1]
+ [  1   0  27 ...   1   0   0]
+ ...
+ [  3   1  33 ... 447  23   9]
+ [  0   0   0 ...   0  49   0]
+ [  0   5  17 ...   2   0 146]]
+2025-05-20 03:54:39,813 [INFO] Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     0.3609    0.5106    0.4229        94
+                                 Apple___Black_rot     0.3200    0.5161    0.3951        93
+                          Apple___Cedar_apple_rust     0.1164    0.6585    0.1978        41
+                                   Apple___healthy     0.6359    0.5587    0.5948       247
+                               Blueberry___healthy     0.6125    0.6533    0.6323       225
+          Cherry_(including_sour)___Powdery_mildew     0.6432    0.8671    0.7385       158
+                 Cherry_(including_sour)___healthy     0.4654    0.7891    0.5855       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.6707    0.7143    0.6918        77
+                       Corn_(maize)___Common_rust_     0.9080    0.8827    0.8952       179
+               Corn_(maize)___Northern_Leaf_Blight     0.7552    0.7297    0.7423       148
+                            Corn_(maize)___healthy     0.7689    0.9943    0.8672       174
+                                 Grape___Black_rot     0.3723    0.6481    0.4730        54
+                      Grape___Esca_(Black_Measles)     0.8010    0.7933    0.7971       208
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     0.7907    0.8447    0.8168       161
+                                   Grape___healthy     0.6951    0.9048    0.7862        63
+          Orange___Haunglongbing_(Citrus_greening)     0.8665    0.7070    0.7787       826
+                            Peach___Bacterial_spot     0.8964    0.8029    0.8471       345
+                                   Peach___healthy     0.4731    0.8148    0.5986        54
+                     Pepper,_bell___Bacterial_spot     0.4465    0.4733    0.4595       150
+                            Pepper,_bell___healthy     0.5885    0.5541    0.5708       222
+                             Potato___Early_blight     0.7202    0.8067    0.7610       150
+                              Potato___Late_blight     0.3851    0.4467    0.4136       150
+                                  Potato___healthy     0.1429    0.5652    0.2281        23
+                               Raspberry___healthy     0.5333    0.7143    0.6107        56
+                                 Soybean___healthy     0.8592    0.6396    0.7333       763
+                           Squash___Powdery_mildew     0.9280    0.8436    0.8838       275
+                          Strawberry___Leaf_scorch     0.7391    0.6145    0.6711       166
+                              Strawberry___healthy     0.6067    0.7941    0.6879        68
+                           Tomato___Bacterial_spot     0.6221    0.5831    0.6019       319
+                             Tomato___Early_blight     0.3043    0.4200    0.3529       150
+                              Tomato___Late_blight     0.6368    0.4231    0.5084       286
+                                Tomato___Leaf_Mold     0.5986    0.5944    0.5965       143
+                       Tomato___Septoria_leaf_spot     0.4709    0.3346    0.3912       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.5780    0.6494    0.6116       251
+                              Tomato___Target_Spot     0.4487    0.5592    0.4979       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     0.9141    0.5560    0.6914       804
+                      Tomato___Tomato_mosaic_virus     0.3740    0.8750    0.5241        56
+                                  Tomato___healthy     0.5748    0.6109    0.5923       239
+
+                                          accuracy                         0.6501      8023
+                                         macro avg     0.5954    0.6697    0.6118      8023
+                                      weighted avg     0.7022    0.6501    0.6627      8023
+
+2025-05-20 03:54:39,848 [INFO] Metrics saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_GLCM_Shape_Color_10_scale_classification_metrics.csv
+2025-05-20 03:54:39,851 [INFO] Confusion matrix saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_GLCM_Shape_Color_10_scale_confusion_matrix.csv
+2025-05-20 03:54:39,852 [INFO] SVM run finished.
+2025-05-20 03:57:31,915 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 03:57:31,917 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 03:57:31,917 [INFO] Parameter grid: {'svc__C': [10], 'svc__gamma': ['scale']}
+2025-05-20 03:57:31,917 [INFO] Creating data splits...
+2025-05-20 03:57:35,497 [INFO] Creating datasets...
+2025-05-20 03:57:35,500 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-20 04:00:55,695 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 04:00:55,698 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 04:00:55,698 [INFO] Parameter grid: {'svc__C': [10], 'svc__gamma': ['scale']}
+2025-05-20 04:00:55,698 [INFO] Creating data splits...
+2025-05-20 04:00:56,919 [INFO] Creating datasets...
+2025-05-20 04:00:56,919 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-20 04:02:11,970 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 04:02:11,973 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 04:02:11,973 [INFO] Parameter grid: {'svc__C': [10], 'svc__gamma': ['scale']}
+2025-05-20 04:02:11,973 [INFO] Creating data splits...
+2025-05-20 04:02:13,283 [INFO] Creating datasets...
+2025-05-20 04:02:13,285 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-20 04:03:28,102 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-20 04:03:28,104 [INFO] Loading and preparing test data for SVM...
+2025-05-20 04:03:53,242 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-20 04:03:53,244 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 04:03:53,244 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-20 04:04:37,537 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-20 04:04:37,537 [INFO] Loading and preparing test data for SVM...
+2025-05-20 04:05:02,450 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-20 04:05:02,450 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 04:05:02,450 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-20 04:11:02,779 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 04:11:02,781 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 04:11:02,782 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 04:11:02,782 [INFO] Creating data splits...
+2025-05-20 04:11:03,989 [INFO] Creating datasets...
+2025-05-20 04:11:03,990 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-20 04:13:37,068 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-20 04:13:37,071 [INFO] Loading and preparing test data for SVM...
+2025-05-20 04:14:02,746 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-20 04:14:02,746 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 04:14:02,747 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-20 15:07:57,200 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 15:07:57,261 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 15:07:57,261 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 15:07:57,261 [INFO] Creating data splits...
+2025-05-20 15:09:35,901 [INFO] Creating datasets...
+2025-05-20 15:09:35,903 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-20 15:23:55,930 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-20 15:23:55,931 [INFO] Loading and preparing test data for SVM...
+2025-05-20 15:26:10,488 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-20 15:26:10,488 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 15:26:10,488 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-20 15:49:32,985 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 15:49:32,986 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 15:49:32,986 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 15:49:32,986 [INFO] Creating data splits...
+2025-05-20 15:49:57,878 [INFO] Creating datasets...
+2025-05-20 15:49:57,882 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-20 15:52:48,993 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-20 15:52:48,994 [INFO] Loading and preparing test data for SVM...
+2025-05-20 15:53:17,818 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-20 15:53:17,819 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 15:53:17,819 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-20 18:38:51,508 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 18:38:51,531 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 18:38:51,531 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 18:38:51,531 [INFO] Creating data splits...
+2025-05-20 18:41:18,545 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 18:41:18,545 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 18:41:18,545 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 18:41:18,545 [INFO] Creating data splits...
+2025-05-20 18:46:54,746 [INFO] Creating datasets...
+2025-05-20 18:46:54,747 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-20 19:13:15,788 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-20 19:13:15,788 [INFO] Loading and preparing test data for SVM...
+2025-05-20 19:17:00,374 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-20 19:17:00,375 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 19:17:00,375 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-20 22:48:27,251 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 22:48:27,281 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 22:48:27,282 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 22:48:27,282 [INFO] Creating data splits...
+2025-05-20 22:54:46,658 [INFO] Creating datasets...
+2025-05-20 22:54:46,658 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-20 23:21:28,251 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-20 23:21:28,252 [INFO] Loading and preparing test data for SVM...
+2025-05-20 23:27:07,461 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-20 23:27:07,463 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-20 23:27:07,463 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-20 23:54:24,618 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 23:54:24,657 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 23:54:24,657 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 23:54:24,657 [INFO] Creating data splits...
+2025-05-20 23:54:50,248 [INFO] Creating datasets...
+2025-05-20 23:54:50,248 [INFO] Loading and preparing training data for SVM using feature extraction: Gabor_HSV
+2025-05-20 23:59:11,699 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 23:59:11,702 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 23:59:11,702 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 23:59:11,703 [INFO] Creating data splits...
+2025-05-20 23:59:13,051 [INFO] Creating datasets...
+2025-05-20 23:59:13,051 [INFO] Loading and preparing training data for SVM using feature extraction: Gabor_HSV
+2025-05-20 23:59:49,918 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 23:59:49,922 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-20 23:59:49,922 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-20 23:59:49,922 [INFO] Creating data splits...
+2025-05-20 23:59:51,274 [INFO] Creating datasets...
+2025-05-20 23:59:51,278 [INFO] Loading and preparing training data for SVM using feature extraction: Gabor_HSV
+2025-05-21 00:38:35,206 [INFO] Training data shape: Features (45461, 80), Labels (45461,)
+2025-05-21 00:38:35,210 [INFO] Loading and preparing test data for SVM...
+2025-05-21 00:45:26,043 [INFO] Test data shape: Features (8023, 80), Labels (8023,)
+2025-05-21 00:45:26,045 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 00:45:26,046 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 01:29:27,386 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:29:27,390 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:29:27,390 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-21 01:29:27,390 [INFO] Creating data splits...
+2025-05-21 01:29:57,996 [INFO] Creating datasets...
+2025-05-21 01:29:57,996 [INFO] Loading and preparing training data for SVM using feature extraction: GLCM_Shape_HSV
+2025-05-21 01:31:29,411 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:31:29,415 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:31:29,415 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-21 01:31:29,415 [INFO] Creating data splits...
+2025-05-21 01:31:57,633 [INFO] Grid search complete.
+2025-05-21 01:31:57,635 [INFO] Best parameters: {'svc__C': 100, 'svc__gamma': 'scale'}
+2025-05-21 01:31:57,635 [INFO] Best CV score: 0.9183
+2025-05-21 01:31:57,636 [INFO] Training SVM model...
+2025-05-21 01:32:02,317 [INFO] Creating datasets...
+2025-05-21 01:32:02,320 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-21 01:32:18,323 [INFO] SVM training complete.
+2025-05-21 01:32:18,361 [INFO] SVM model saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_Gabor_HSV_100_scale.pkl
+2025-05-21 01:32:18,361 [INFO] Evaluating SVM model on the test set...
+2025-05-21 01:32:34,012 [INFO] Confusion Matrix:
+[[ 74   0   2 ...   0   0   0]
+ [  0  84   0 ...   0   0   0]
+ [  2   0  28 ...   0   0   1]
+ ...
+ [  0   0   1 ... 781   0   0]
+ [  0   0   0 ...   0  49   0]
+ [  0   0   0 ...   0   0 233]]
+2025-05-21 01:32:34,013 [INFO] Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     0.6981    0.7872    0.7400        94
+                                 Apple___Black_rot     0.8660    0.9032    0.8842        93
+                          Apple___Cedar_apple_rust     0.7568    0.6829    0.7179        41
+                                   Apple___healthy     0.9024    0.8988    0.9006       247
+                               Blueberry___healthy     0.9167    0.9289    0.9227       225
+          Cherry_(including_sour)___Powdery_mildew     0.8988    0.9557    0.9264       158
+                 Cherry_(including_sour)___healthy     0.9242    0.9531    0.9385       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.8451    0.7792    0.8108        77
+                       Corn_(maize)___Common_rust_     0.9774    0.9665    0.9719       179
+               Corn_(maize)___Northern_Leaf_Blight     0.8912    0.8851    0.8881       148
+                            Corn_(maize)___healthy     0.9202    0.9943    0.9558       174
+                                 Grape___Black_rot     0.7778    0.7778    0.7778        54
+                      Grape___Esca_(Black_Measles)     0.9340    0.9519    0.9429       208
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     0.9752    0.9752    0.9752       161
+                                   Grape___healthy     0.8769    0.9048    0.8906        63
+          Orange___Haunglongbing_(Citrus_greening)     0.9736    0.9806    0.9771       826
+                            Peach___Bacterial_spot     0.9104    0.9130    0.9117       345
+                                   Peach___healthy     0.9286    0.9630    0.9455        54
+                     Pepper,_bell___Bacterial_spot     0.9333    0.8400    0.8842       150
+                            Pepper,_bell___healthy     0.9140    0.9099    0.9120       222
+                             Potato___Early_blight     0.9603    0.9667    0.9635       150
+                              Potato___Late_blight     0.8456    0.8400    0.8428       150
+                                  Potato___healthy     0.9524    0.8696    0.9091        23
+                               Raspberry___healthy     0.9273    0.9107    0.9189        56
+                                 Soybean___healthy     0.9737    0.9712    0.9724       763
+                           Squash___Powdery_mildew     0.9674    0.9709    0.9691       275
+                          Strawberry___Leaf_scorch     0.9752    0.9458    0.9602       166
+                              Strawberry___healthy     0.9286    0.9559    0.9420        68
+                           Tomato___Bacterial_spot     0.9169    0.9342    0.9255       319
+                             Tomato___Early_blight     0.7222    0.6933    0.7075       150
+                              Tomato___Late_blight     0.8272    0.7867    0.8065       286
+                                Tomato___Leaf_Mold     0.9197    0.8811    0.9000       143
+                       Tomato___Septoria_leaf_spot     0.8434    0.8910    0.8665       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.8943    0.9442    0.9186       251
+                              Tomato___Target_Spot     0.9271    0.8436    0.8834       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     0.9861    0.9714    0.9787       804
+                      Tomato___Tomato_mosaic_virus     0.8909    0.8750    0.8829        56
+                                  Tomato___healthy     0.9831    0.9749    0.9790       239
+
+                                          accuracy                         0.9256      8023
+                                         macro avg     0.9016    0.8994    0.9000      8023
+                                      weighted avg     0.9259    0.9256    0.9254      8023
+
+2025-05-21 01:32:34,081 [INFO] Metrics saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_Gabor_HSV_100_scale_classification_metrics.csv
+2025-05-21 01:32:34,105 [INFO] Confusion matrix saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_Gabor_HSV_100_scale_confusion_matrix.csv
+2025-05-21 01:32:34,105 [INFO] SVM run finished.
+2025-05-21 01:35:01,089 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:35:01,093 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:35:01,093 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-21 01:35:01,093 [INFO] Creating data splits...
+2025-05-21 01:35:21,258 [INFO] Creating datasets...
+2025-05-21 01:35:21,260 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-21 01:37:01,809 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-21 01:37:01,811 [INFO] Loading and preparing test data for SVM...
+2025-05-21 01:37:46,875 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-21 01:37:46,878 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 01:37:46,878 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 01:37:53,157 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-21 01:37:53,159 [INFO] Loading and preparing test data for SVM...
+2025-05-21 01:38:02,980 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:38:02,984 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:38:02,984 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-21 01:38:02,984 [INFO] Creating data splits...
+2025-05-21 01:38:04,538 [INFO] Creating datasets...
+2025-05-21 01:38:04,540 [INFO] Loading and preparing training data for SVM using feature extraction: GLCM_Shape_HSV
+2025-05-21 01:38:23,067 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-21 01:38:23,067 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 01:38:23,067 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 01:42:58,963 [INFO] Training data shape: Features (45461, 75), Labels (45461,)
+2025-05-21 01:42:58,966 [INFO] Loading and preparing test data for SVM...
+2025-05-21 01:43:43,252 [INFO] Test data shape: Features (8023, 75), Labels (8023,)
+2025-05-21 01:43:43,255 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 01:43:43,255 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 01:45:16,105 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:45:16,108 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:45:16,108 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-21 01:45:16,108 [INFO] Creating data splits...
+2025-05-21 01:45:17,654 [INFO] Creating datasets...
+2025-05-21 01:45:17,654 [INFO] Loading and preparing training data for SVM using feature extraction: GLCM_Shape_HSV
+2025-05-21 01:45:37,405 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:45:37,405 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:45:37,405 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-21 01:45:37,405 [INFO] Creating data splits...
+2025-05-21 01:45:38,936 [INFO] Creating datasets...
+2025-05-21 01:45:38,938 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-21 01:47:47,405 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:47:47,408 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:47:47,408 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-21 01:47:47,408 [INFO] Creating data splits...
+2025-05-21 01:47:48,967 [INFO] Creating datasets...
+2025-05-21 01:47:48,968 [INFO] Loading and preparing training data for SVM using feature extraction: GLCM_Shape_HSV
