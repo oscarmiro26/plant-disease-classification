@@ -1003,3 +1003,421 @@ Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.8451    0.7792    0.810
 2025-05-21 01:47:47,408 [INFO] Creating data splits...
 2025-05-21 01:47:48,967 [INFO] Creating datasets...
 2025-05-21 01:47:48,968 [INFO] Loading and preparing training data for SVM using feature extraction: GLCM_Shape_HSV
+2025-05-21 01:48:58,891 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-21 01:48:58,893 [INFO] Loading and preparing test data for SVM...
+2025-05-21 01:49:34,475 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-21 01:49:34,475 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 01:49:34,475 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 01:52:31,107 [INFO] Training data shape: Features (45461, 75), Labels (45461,)
+2025-05-21 01:52:31,110 [INFO] Loading and preparing test data for SVM...
+2025-05-21 01:53:14,132 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:53:14,136 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 01:53:14,136 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-21 01:53:14,136 [INFO] Creating data splits...
+2025-05-21 01:53:15,192 [INFO] Test data shape: Features (8023, 75), Labels (8023,)
+2025-05-21 01:53:15,192 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 01:53:15,192 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 01:53:15,698 [INFO] Creating datasets...
+2025-05-21 01:53:15,699 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-21 01:56:04,344 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-21 01:56:04,346 [INFO] Loading and preparing test data for SVM...
+2025-05-21 01:56:33,480 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-21 01:56:33,481 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 01:56:33,481 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 02:24:30,905 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 02:24:30,909 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 02:24:30,909 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10], 'svc__gamma': ['scale', 'auto', 0.001, 0.0001]}
+2025-05-21 02:24:30,909 [INFO] Creating data splits...
+2025-05-21 02:24:32,448 [INFO] Creating datasets...
+2025-05-21 02:24:32,450 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-21 02:26:00,372 [INFO] Grid search complete.
+2025-05-21 02:26:00,374 [INFO] Best parameters: {'svc__C': 10, 'svc__gamma': 'auto'}
+2025-05-21 02:26:00,374 [INFO] Best CV score: 0.8705
+2025-05-21 02:26:00,374 [INFO] Training SVM model...
+2025-05-21 02:26:28,769 [INFO] SVM training complete.
+2025-05-21 02:26:28,796 [INFO] SVM model saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_GLCM_Shape_HSV_10_auto.pkl
+2025-05-21 02:26:28,797 [INFO] Evaluating SVM model on the test set...
+2025-05-21 02:26:48,044 [INFO] Confusion Matrix:
+[[ 70   0   1 ...   0   0   0]
+ [  1  73   0 ...   0   1   0]
+ [  2   1  22 ...   1   0   1]
+ ...
+ [  2   0   1 ... 735   0   0]
+ [  0   1   0 ...   0  52   0]
+ [  0   0   0 ...   0   0 223]]
+2025-05-21 02:26:48,045 [INFO] Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     0.6481    0.7447    0.6931        94
+                                 Apple___Black_rot     0.7684    0.7849    0.7766        93
+                          Apple___Cedar_apple_rust     0.5116    0.5366    0.5238        41
+                                   Apple___healthy     0.8039    0.8300    0.8167       247
+                               Blueberry___healthy     0.9042    0.9644    0.9333       225
+          Cherry_(including_sour)___Powdery_mildew     0.8362    0.9367    0.8836       158
+                 Cherry_(including_sour)___healthy     0.8947    0.9297    0.9119       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.7237    0.7143    0.7190        77
+                       Corn_(maize)___Common_rust_     0.9827    0.9497    0.9659       179
+               Corn_(maize)___Northern_Leaf_Blight     0.8425    0.8311    0.8367       148
+                            Corn_(maize)___healthy     0.8788    1.0000    0.9355       174
+                                 Grape___Black_rot     0.6000    0.7778    0.6774        54
+                      Grape___Esca_(Black_Measles)     0.9336    0.9471    0.9403       208
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     0.9874    0.9752    0.9812       161
+                                   Grape___healthy     0.7941    0.8571    0.8244        63
+          Orange___Haunglongbing_(Citrus_greening)     0.9403    0.9153    0.9276       826
+                            Peach___Bacterial_spot     0.9388    0.8899    0.9137       345
+                                   Peach___healthy     0.9434    0.9259    0.9346        54
+                     Pepper,_bell___Bacterial_spot     0.7812    0.8333    0.8065       150
+                            Pepper,_bell___healthy     0.8688    0.8649    0.8668       222
+                             Potato___Early_blight     0.9474    0.9600    0.9536       150
+                              Potato___Late_blight     0.7622    0.7267    0.7440       150
+                                  Potato___healthy     0.5161    0.6957    0.5926        23
+                               Raspberry___healthy     0.8167    0.8750    0.8448        56
+                                 Soybean___healthy     0.9583    0.9043    0.9305       763
+                           Squash___Powdery_mildew     0.9739    0.9491    0.9613       275
+                          Strawberry___Leaf_scorch     0.9623    0.9217    0.9415       166
+                              Strawberry___healthy     0.9275    0.9412    0.9343        68
+                           Tomato___Bacterial_spot     0.8913    0.8997    0.8955       319
+                             Tomato___Early_blight     0.6140    0.7000    0.6542       150
+                              Tomato___Late_blight     0.7600    0.6643    0.7090       286
+                                Tomato___Leaf_Mold     0.8133    0.8531    0.8328       143
+                       Tomato___Septoria_leaf_spot     0.8523    0.7594    0.8032       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.7766    0.8725    0.8218       251
+                              Tomato___Target_Spot     0.8104    0.8104    0.8104       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     0.9545    0.9142    0.9339       804
+                      Tomato___Tomato_mosaic_virus     0.8254    0.9286    0.8739        56
+                                  Tomato___healthy     0.8992    0.9331    0.9158       239
+
+                                          accuracy                         0.8785      8023
+                                         macro avg     0.8327    0.8557    0.8427      8023
+                                      weighted avg     0.8819    0.8785    0.8792      8023
+
+2025-05-21 02:26:48,072 [INFO] Metrics saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_GLCM_Shape_HSV_10_auto_classification_metrics.csv
+2025-05-21 02:26:48,076 [INFO] Confusion matrix saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_GLCM_Shape_HSV_10_auto_confusion_matrix.csv
+2025-05-21 02:26:48,076 [INFO] SVM run finished.
+2025-05-21 02:27:20,586 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-21 02:27:20,587 [INFO] Loading and preparing test data for SVM...
+2025-05-21 02:27:48,879 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-21 02:27:48,880 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 02:27:48,880 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 02:29:18,920 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 02:29:18,922 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 02:29:18,922 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'svc__gamma': ['scale', 'auto', 0.01, 0.001, 0.0001]}
+2025-05-21 02:29:18,922 [INFO] Creating data splits...
+2025-05-21 02:29:20,455 [INFO] Creating datasets...
+2025-05-21 02:29:20,456 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-21 02:29:40,186 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 02:29:40,187 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 02:29:40,187 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'svc__gamma': ['scale', 'auto', 0.01, 0.001, 0.0001]}
+2025-05-21 02:29:40,187 [INFO] Creating data splits...
+2025-05-21 02:29:41,767 [INFO] Creating datasets...
+2025-05-21 02:29:41,770 [INFO] Loading and preparing training data for SVM using feature extraction: GLCM_Shape_HSV
+2025-05-21 02:32:03,856 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-21 02:32:03,856 [INFO] Loading and preparing test data for SVM...
+2025-05-21 02:32:32,447 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-21 02:32:32,447 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 02:32:32,448 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 02:34:26,824 [INFO] Training data shape: Features (45461, 75), Labels (45461,)
+2025-05-21 02:34:26,824 [INFO] Loading and preparing test data for SVM...
+2025-05-21 02:35:16,869 [INFO] Test data shape: Features (8023, 75), Labels (8023,)
+2025-05-21 02:35:16,869 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 02:35:16,869 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 03:16:59,664 [INFO] Grid search complete.
+2025-05-21 03:16:59,664 [INFO] Best parameters: {'svc__C': 100, 'svc__gamma': 'scale'}
+2025-05-21 03:16:59,664 [INFO] Best CV score: 0.8847
+2025-05-21 03:16:59,664 [INFO] Training SVM model...
+2025-05-21 03:17:25,133 [INFO] SVM training complete.
+2025-05-21 03:17:25,266 [INFO] SVM model saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_GLCM_Shape_HSV_100_scale.pkl
+2025-05-21 03:17:25,267 [INFO] Evaluating SVM model on the test set...
+2025-05-21 03:17:41,032 [INFO] Confusion Matrix:
+[[ 75   0   1 ...   0   0   0]
+ [  0  81   1 ...   0   1   0]
+ [  2   0  28 ...   1   0   0]
+ ...
+ [  2   0   0 ... 763   1   0]
+ [  0   0   0 ...   0  49   0]
+ [  0   0   0 ...   0   0 227]]
+2025-05-21 03:17:41,033 [INFO] Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     0.6944    0.7979    0.7426        94
+                                 Apple___Black_rot     0.8901    0.8710    0.8804        93
+                          Apple___Cedar_apple_rust     0.7000    0.6829    0.6914        41
+                                   Apple___healthy     0.8340    0.8340    0.8340       247
+                               Blueberry___healthy     0.9138    0.9422    0.9278       225
+          Cherry_(including_sour)___Powdery_mildew     0.8988    0.9557    0.9264       158
+                 Cherry_(including_sour)___healthy     0.8984    0.8984    0.8984       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.7778    0.7273    0.7517        77
+                       Corn_(maize)___Common_rust_     0.9770    0.9497    0.9632       179
+               Corn_(maize)___Northern_Leaf_Blight     0.8367    0.8311    0.8339       148
+                            Corn_(maize)___healthy     0.8009    0.9943    0.8872       174
+                                 Grape___Black_rot     0.6863    0.6481    0.6667        54
+                      Grape___Esca_(Black_Measles)     0.9198    0.9375    0.9286       208
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     0.9571    0.9689    0.9630       161
+                                   Grape___healthy     0.9107    0.8095    0.8571        63
+          Orange___Haunglongbing_(Citrus_greening)     0.9631    0.9479    0.9555       826
+                            Peach___Bacterial_spot     0.9477    0.9449    0.9463       345
+                                   Peach___healthy     0.9643    1.0000    0.9818        54
+                     Pepper,_bell___Bacterial_spot     0.7679    0.8600    0.8113       150
+                            Pepper,_bell___healthy     0.8599    0.8018    0.8298       222
+                             Potato___Early_blight     0.9730    0.9600    0.9664       150
+                              Potato___Late_blight     0.7987    0.7933    0.7960       150
+                                  Potato___healthy     0.6071    0.7391    0.6667        23
+                               Raspberry___healthy     0.8387    0.9286    0.8814        56
+                                 Soybean___healthy     0.9457    0.9581    0.9518       763
+                           Squash___Powdery_mildew     0.9699    0.9382    0.9538       275
+                          Strawberry___Leaf_scorch     0.9742    0.9096    0.9408       166
+                              Strawberry___healthy     0.9677    0.8824    0.9231        68
+                           Tomato___Bacterial_spot     0.9355    0.9091    0.9221       319
+                             Tomato___Early_blight     0.6846    0.6800    0.6823       150
+                              Tomato___Late_blight     0.8175    0.7517    0.7832       286
+                                Tomato___Leaf_Mold     0.8323    0.9021    0.8658       143
+                       Tomato___Septoria_leaf_spot     0.8405    0.8120    0.8260       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.8680    0.8645    0.8663       251
+                              Tomato___Target_Spot     0.8093    0.8246    0.8169       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     0.9585    0.9490    0.9537       804
+                      Tomato___Tomato_mosaic_virus     0.8909    0.8750    0.8829        56
+                                  Tomato___healthy     0.9578    0.9498    0.9538       239
+
+                                          accuracy                         0.8988      8023
+                                         macro avg     0.8650    0.8692    0.8661      8023
+                                      weighted avg     0.9001    0.8988    0.8989      8023
+
+2025-05-21 03:17:41,057 [INFO] Metrics saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_GLCM_Shape_HSV_100_scale_classification_metrics.csv
+2025-05-21 03:17:41,062 [INFO] Confusion matrix saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_GLCM_Shape_HSV_100_scale_confusion_matrix.csv
+2025-05-21 03:17:41,062 [INFO] SVM run finished.
+2025-05-21 04:45:47,852 [INFO] Grid search complete.
+2025-05-21 04:45:47,854 [INFO] Best parameters: {'svc__C': 1000, 'svc__gamma': 0.01}
+2025-05-21 04:45:47,854 [INFO] Best CV score: 0.4153
+2025-05-21 04:45:47,854 [INFO] Training SVM model...
+2025-05-21 04:51:52,387 [INFO] SVM training complete.
+2025-05-21 04:51:52,541 [INFO] SVM model saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_HOG_LBP_1000_0.01.pkl
+2025-05-21 04:51:52,541 [INFO] Evaluating SVM model on the test set...
+2025-05-21 04:52:25,652 [INFO] Confusion Matrix:
+[[ 17   2   2 ...   1   0   2]
+ [  0  24   3 ...   0   0   3]
+ [  0   1  21 ...   0   0   0]
+ ...
+ [  2   5   6 ... 441  67   4]
+ [  0   0   0 ...   1  40   0]
+ [  2   5   8 ...   2   1  74]]
+2025-05-21 04:52:25,653 [INFO] Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     0.2000    0.1809    0.1899        94
+                                 Apple___Black_rot     0.1446    0.2581    0.1853        93
+                          Apple___Cedar_apple_rust     0.0959    0.5122    0.1615        41
+                                   Apple___healthy     0.3189    0.3887    0.3504       247
+                               Blueberry___healthy     0.4232    0.4533    0.4378       225
+          Cherry_(including_sour)___Powdery_mildew     0.5393    0.6519    0.5903       158
+                 Cherry_(including_sour)___healthy     0.1656    0.2109    0.1856       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.4828    0.3636    0.4148        77
+                       Corn_(maize)___Common_rust_     0.4479    0.7933    0.5726       179
+               Corn_(maize)___Northern_Leaf_Blight     0.5441    0.5000    0.5211       148
+                            Corn_(maize)___healthy     0.7489    0.9770    0.8479       174
+                                 Grape___Black_rot     0.1881    0.3519    0.2452        54
+                      Grape___Esca_(Black_Measles)     0.5480    0.4663    0.5039       208
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     0.5528    0.5528    0.5528       161
+                                   Grape___healthy     0.1839    0.2540    0.2133        63
+          Orange___Haunglongbing_(Citrus_greening)     0.7832    0.5642    0.6559       826
+                            Peach___Bacterial_spot     0.4788    0.4899    0.4842       345
+                                   Peach___healthy     0.2037    0.2037    0.2037        54
+                     Pepper,_bell___Bacterial_spot     0.2202    0.2467    0.2327       150
+                            Pepper,_bell___healthy     0.2350    0.1937    0.2123       222
+                             Potato___Early_blight     0.2953    0.2933    0.2943       150
+                              Potato___Late_blight     0.2323    0.2400    0.2361       150
+                                  Potato___healthy     0.0476    0.1304    0.0698        23
+                               Raspberry___healthy     0.2000    0.2143    0.2069        56
+                                 Soybean___healthy     0.5587    0.4364    0.4901       763
+                           Squash___Powdery_mildew     0.7083    0.6800    0.6939       275
+                          Strawberry___Leaf_scorch     0.2595    0.2048    0.2290       166
+                              Strawberry___healthy     0.3306    0.5882    0.4233        68
+                           Tomato___Bacterial_spot     0.3453    0.3323    0.3387       319
+                             Tomato___Early_blight     0.1351    0.1333    0.1342       150
+                              Tomato___Late_blight     0.3156    0.2692    0.2906       286
+                                Tomato___Leaf_Mold     0.3048    0.2238    0.2581       143
+                       Tomato___Septoria_leaf_spot     0.0952    0.0376    0.0539       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.4069    0.5139    0.4542       251
+                              Tomato___Target_Spot     0.2965    0.2796    0.2878       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     0.7643    0.5485    0.6387       804
+                      Tomato___Tomato_mosaic_virus     0.1660    0.7143    0.2694        56
+                                  Tomato___healthy     0.2868    0.3096    0.2978       239
+
+                                          accuracy                         0.4273      8023
+                                         macro avg     0.3488    0.3885    0.3534      8023
+                                      weighted avg     0.4615    0.4273    0.4346      8023
+
+2025-05-21 04:52:25,678 [INFO] Metrics saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_HOG_LBP_1000_0.01_classification_metrics.csv
+2025-05-21 04:52:25,702 [INFO] Confusion matrix saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_HOG_LBP_1000_0.01_confusion_matrix.csv
+2025-05-21 04:52:25,702 [INFO] SVM run finished.
+2025-05-21 13:16:20,248 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 13:16:20,263 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 13:16:20,264 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'svc__gamma': ['scale', 'auto', 0.01, 0.001, 0.0001]}
+2025-05-21 13:16:20,264 [INFO] Creating data splits...
+2025-05-21 13:18:11,750 [INFO] Creating datasets...
+2025-05-21 13:18:11,754 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-21 13:32:00,401 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-21 13:32:00,403 [INFO] Loading and preparing test data for SVM...
+2025-05-21 13:34:23,115 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-21 13:34:23,118 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 13:34:23,118 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 20:11:25,669 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 20:11:25,694 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 20:11:25,694 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'svc__gamma': ['scale', 'auto', 0.01, 0.001, 0.0001]}
+2025-05-21 20:11:25,694 [INFO] Creating data splits...
+2025-05-21 20:11:52,955 [INFO] Creating datasets...
+2025-05-21 20:11:52,956 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-21 20:26:24,424 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-21 20:26:24,441 [INFO] Loading and preparing test data for SVM...
+2025-05-21 20:29:06,848 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-21 20:29:06,848 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 20:29:06,848 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-21 22:14:48,838 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 22:14:48,902 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-21 22:14:48,903 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'svc__gamma': ['scale', 'auto', 0.01, 0.001, 0.0001]}
+2025-05-21 22:14:48,903 [INFO] Creating data splits...
+2025-05-21 22:21:27,325 [INFO] Creating datasets...
+2025-05-21 22:21:27,326 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-21 22:38:51,933 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-21 22:38:51,963 [INFO] Loading and preparing test data for SVM...
+2025-05-21 22:41:39,706 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-21 22:41:39,706 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-21 22:41:39,707 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-22 06:32:02,822 [INFO] Grid search complete.
+2025-05-22 06:32:02,858 [INFO] Best parameters: {'svc__C': 10, 'svc__gamma': 0.01}
+2025-05-22 06:32:02,858 [INFO] Best CV score: 0.5686
+2025-05-22 06:32:02,858 [INFO] Training SVM model...
+2025-05-22 06:42:38,866 [INFO] SVM training complete.
+2025-05-22 06:42:39,098 [INFO] SVM model saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_HOG_LBP_10_0.01.pkl
+2025-05-22 06:42:39,098 [INFO] Evaluating SVM model on the test set...
+2025-05-22 06:43:14,996 [INFO] Confusion Matrix:
+[[ 32   1   0 ...   2   0   0]
+ [  2  54   2 ...   0   0   0]
+ [  1   0   3 ...   7   1   0]
+ ...
+ [  2   1   7 ... 525  24   3]
+ [  0   0   0 ...   2  19   0]
+ [  0   0   0 ...   0   3 104]]
+2025-05-22 06:43:14,997 [INFO] Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     0.3265    0.3404    0.3333        94
+                                 Apple___Black_rot     0.5455    0.5806    0.5625        93
+                          Apple___Cedar_apple_rust     0.0833    0.0732    0.0779        41
+                                   Apple___healthy     0.4618    0.4899    0.4754       247
+                               Blueberry___healthy     0.3875    0.5511    0.4550       225
+          Cherry_(including_sour)___Powdery_mildew     0.7095    0.8038    0.7537       158
+                 Cherry_(including_sour)___healthy     0.4775    0.4141    0.4435       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.6471    0.4286    0.5156        77
+                       Corn_(maize)___Common_rust_     0.6777    0.7989    0.7333       179
+               Corn_(maize)___Northern_Leaf_Blight     0.6090    0.6419    0.6250       148
+                            Corn_(maize)___healthy     0.8632    0.9425    0.9011       174
+                                 Grape___Black_rot     0.2500    0.1667    0.2000        54
+                      Grape___Esca_(Black_Measles)     0.6983    0.7788    0.7364       208
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     0.7516    0.7516    0.7516       161
+                                   Grape___healthy     0.4754    0.4603    0.4677        63
+          Orange___Haunglongbing_(Citrus_greening)     0.8422    0.8075    0.8245       826
+                            Peach___Bacterial_spot     0.5662    0.6696    0.6135       345
+                                   Peach___healthy     0.3333    0.2037    0.2529        54
+                     Pepper,_bell___Bacterial_spot     0.3333    0.3067    0.3194       150
+                            Pepper,_bell___healthy     0.5039    0.5811    0.5397       222
+                             Potato___Early_blight     0.3904    0.3800    0.3851       150
+                              Potato___Late_blight     0.2899    0.2667    0.2778       150
+                                  Potato___healthy     0.0000    0.0000    0.0000        23
+                               Raspberry___healthy     0.6410    0.4464    0.5263        56
+                                 Soybean___healthy     0.7260    0.6946    0.7100       763
+                           Squash___Powdery_mildew     0.7516    0.8473    0.7966       275
+                          Strawberry___Leaf_scorch     0.4570    0.4157    0.4353       166
+                              Strawberry___healthy     0.6406    0.6029    0.6212        68
+                           Tomato___Bacterial_spot     0.5096    0.5831    0.5439       319
+                             Tomato___Early_blight     0.2080    0.1733    0.1891       150
+                              Tomato___Late_blight     0.3913    0.4720    0.4279       286
+                                Tomato___Leaf_Mold     0.4336    0.3427    0.3828       143
+                       Tomato___Septoria_leaf_spot     0.2381    0.1316    0.1695       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.5126    0.5657    0.5379       251
+                              Tomato___Target_Spot     0.3370    0.2891    0.3112       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     0.7363    0.6530    0.6922       804
+                      Tomato___Tomato_mosaic_virus     0.1827    0.3393    0.2375        56
+                                  Tomato___healthy     0.4444    0.4351    0.4397       239
+
+                                          accuracy                         0.5772      8023
+                                         macro avg     0.4851    0.4850    0.4807      8023
+                                      weighted avg     0.5744    0.5772    0.5727      8023
+
+2025-05-22 06:43:15,045 [INFO] Metrics saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_HOG_LBP_10_0.01_classification_metrics.csv
+2025-05-22 06:43:15,050 [INFO] Confusion matrix saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_HOG_LBP_10_0.01_confusion_matrix.csv
+2025-05-22 06:43:15,050 [INFO] SVM run finished.
+2025-05-22 16:55:31,889 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-22 16:55:31,942 [INFO] Starting SVM training and evaluation run in /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1
+2025-05-22 16:55:31,942 [INFO] Parameter grid: {'svc__C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'svc__gamma': ['scale', 'auto', 0.01, 0.001, 0.0001]}
+2025-05-22 16:55:31,942 [INFO] Creating data splits...
+2025-05-22 16:57:28,624 [INFO] Creating datasets...
+2025-05-22 16:57:28,624 [INFO] Loading and preparing training data for SVM using feature extraction: HOG_LBP
+2025-05-22 17:11:42,871 [INFO] Training data shape: Features (45461, 2058), Labels (45461,)
+2025-05-22 17:11:42,871 [INFO] Loading and preparing test data for SVM...
+2025-05-22 17:14:16,645 [INFO] Test data shape: Features (8023, 2058), Labels (8023,)
+2025-05-22 17:14:16,645 [INFO] Data preparation complete. Commencing SVM training...
+2025-05-22 17:14:16,646 [INFO] Starting grid search for hyperparameter tuning...
+2025-05-23 01:04:40,802 [INFO] Grid search complete.
+2025-05-23 01:04:40,863 [INFO] Best parameters: {'svc__C': 100, 'svc__gamma': 0.001}
+2025-05-23 01:04:40,863 [INFO] Best CV score: 0.6598
+2025-05-23 01:04:40,863 [INFO] Training SVM model...
+2025-05-23 01:14:55,151 [INFO] SVM training complete.
+2025-05-23 01:14:55,575 [INFO] SVM model saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_HOG_LBP_100_0.001.pkl
+2025-05-23 01:14:55,575 [INFO] Evaluating SVM model on the test set...
+2025-05-23 01:17:47,428 [INFO] Confusion Matrix:
+[[ 35   1   0 ...   2   0   0]
+ [  0  56   0 ...   1   0   0]
+ [  2   1   3 ...   2   0   0]
+ ...
+ [  0   0   0 ... 664   2   5]
+ [  0   0   1 ...   8  10   1]
+ [  0   0   1 ...   6   3 135]]
+2025-05-23 01:17:47,429 [INFO] Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     0.5303    0.3723    0.4375        94
+                                 Apple___Black_rot     0.7467    0.6022    0.6667        93
+                          Apple___Cedar_apple_rust     0.3333    0.0732    0.1200        41
+                                   Apple___healthy     0.5331    0.5547    0.5437       247
+                               Blueberry___healthy     0.5798    0.6133    0.5961       225
+          Cherry_(including_sour)___Powdery_mildew     0.8795    0.9241    0.9012       158
+                 Cherry_(including_sour)___healthy     0.8403    0.7812    0.8097       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.7556    0.4416    0.5574        77
+                       Corn_(maize)___Common_rust_     0.6549    0.9330    0.7696       179
+               Corn_(maize)___Northern_Leaf_Blight     0.7037    0.6419    0.6714       148
+                            Corn_(maize)___healthy     0.8607    0.9943    0.9227       174
+                                 Grape___Black_rot     0.4545    0.0926    0.1538        54
+                      Grape___Esca_(Black_Measles)     0.8051    0.9135    0.8559       208
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     0.8961    0.8571    0.8762       161
+                                   Grape___healthy     0.8636    0.6032    0.7103        63
+          Orange___Haunglongbing_(Citrus_greening)     0.9035    0.9177    0.9105       826
+                            Peach___Bacterial_spot     0.6164    0.7826    0.6897       345
+                                   Peach___healthy     0.6316    0.2222    0.3288        54
+                     Pepper,_bell___Bacterial_spot     0.5514    0.3933    0.4591       150
+                            Pepper,_bell___healthy     0.6866    0.6216    0.6525       222
+                             Potato___Early_blight     0.5065    0.5200    0.5132       150
+                              Potato___Late_blight     0.4915    0.3867    0.4328       150
+                                  Potato___healthy     0.5000    0.0435    0.0800        23
+                               Raspberry___healthy     0.9000    0.6429    0.7500        56
+                                 Soybean___healthy     0.7787    0.8899    0.8306       763
+                           Squash___Powdery_mildew     0.7492    0.8909    0.8140       275
+                          Strawberry___Leaf_scorch     0.5294    0.4880    0.5078       166
+                              Strawberry___healthy     0.7925    0.6176    0.6942        68
+                           Tomato___Bacterial_spot     0.5924    0.6332    0.6121       319
+                             Tomato___Early_blight     0.2524    0.1733    0.2055       150
+                              Tomato___Late_blight     0.4318    0.5420    0.4806       286
+                                Tomato___Leaf_Mold     0.5000    0.3566    0.4163       143
+                       Tomato___Septoria_leaf_spot     0.3004    0.2632    0.2806       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.6029    0.6653    0.6326       251
+                              Tomato___Target_Spot     0.4463    0.3744    0.4072       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     0.7933    0.8259    0.8093       804
+                      Tomato___Tomato_mosaic_virus     0.4167    0.1786    0.2500        56
+                                  Tomato___healthy     0.5720    0.5649    0.5684       239
+
+                                          accuracy                         0.6819      8023
+                                         macro avg     0.6311    0.5630    0.5768      8023
+                                      weighted avg     0.6716    0.6819    0.6699      8023
+
+2025-05-23 01:17:47,533 [INFO] Metrics saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_HOG_LBP_100_0.001_classification_metrics.csv
+2025-05-23 01:17:47,537 [INFO] Confusion matrix saved to /scratch/s5142822/plant-disease-classification/src/training/../../logs/svm/svm_1/svm_model_HOG_LBP_100_0.001_confusion_matrix.csv
+2025-05-23 01:17:47,537 [INFO] SVM run finished.

@@ -11,12 +11,7 @@ from sklearn.metrics import (
     precision_recall_fscore_support,
 )
 from sklearn.base import BaseEstimator
-from sklearn.feature_selection import (
-    VarianceThreshold,
-    SelectKBest,  
-    RFE,
-    f_classif,
-)
+from sklearn.feature_selection import VarianceThreshold
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV, ParameterGrid
 from sklearn.pipeline import Pipeline
@@ -46,8 +41,8 @@ os.environ["MKL_NUM_THREADS"] = str(N_JOBS)
 os.environ["NUMEXPR_NUM_THREADS"] = str(N_JOBS)
 
 PARAM_GRID = {
-    'svc__C': [0.001, 0.01, 0.1, 1, 10],
-    'svc__gamma': ['scale', 'auto', 0.001, 0.0001],
+    'svc__C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+    'svc__gamma': ['scale', 'auto', 0.01, 0.001, 0.0001],
 }
 
 class CorrelationFilter(BaseEstimator):
@@ -297,10 +292,10 @@ def train_and_evaluate():
 
     # feature_extraction_fn = extract_features_1
     # feature_extraction_fn.__name__ = "HOG_LBP" # Set the name for logging
-    feature_extraction_fn = extract_features_2
-    feature_extraction_fn.__name__ = "GLCM_Shape_HSV" # Set the name for logging
-    # feature_extraction_fn = extract_features_3
-    # feature_extraction_fn.__name__ = "Gabor_HSV" # Set the name for logging
+    # feature_extraction_fn = extract_features_2
+    # feature_extraction_fn.__name__ = "GLCM_Shape_HSV" # Set the name for logging
+    feature_extraction_fn = extract_features_3
+    feature_extraction_fn.__name__ = "Gabor_HSV" # Set the name for logging
 
     # Load and prepare data for SVM
     logger.info("Loading and preparing training data for SVM using feature extraction: %s", feature_extraction_fn.__name__)
@@ -313,24 +308,10 @@ def train_and_evaluate():
 
     logger.info("Data preparation complete. Commencing SVM training...")
 
-    # # Pipeline for feature extraction #1
-    # pipeline = Pipeline([
-    #     ('var_thresh',      VarianceThreshold(threshold=1e-3)),
-    #     ('corr_filter',     CorrelationFilter(threshold=0.9)),
-    #     ('univariate',      SelectKBest(f_classif, k=100)), # SelectKBest
-    #     ('scaler',          StandardScaler()),
-    #     ('rfe',             RFE(estimator=SVC(kernel="linear", 
-    #                                         max_iter=5000), n_features_to_select=75, step=0.1)),
-    #     ('pca',             PCA(n_components=0.95, whiten=True)),
-    #     ('svc',             SVC(class_weight='balanced', 
-    #                             cache_size=2000, kernel='rbf'))
-    # ])
-
-    # Pipeline for feature extraction #2 and #3
     pipeline = Pipeline([
+        ('scaler',          StandardScaler()),
         ('var_thresh',      VarianceThreshold(threshold=1e-3)),
         ('corr_filter',     CorrelationFilter(threshold=0.9)),
-        ('scaler',          StandardScaler()),        
         ('pca',             PCA(n_components=0.95, whiten=True)),
         ('svc',             SVC(class_weight='balanced', 
                                 cache_size=2000, kernel='rbf'))
@@ -427,57 +408,6 @@ def train_and_evaluate():
     logger.info(f"Confusion matrix saved to {cm_csv}")
     logger.info("SVM run finished.")
 
-    # ### DEBUGGING (comment out above code) ###
-    # train_df, val_df, test_df = create_splits(
-    #     data_dir=config.RAW_DATA_DIR,
-    #     label_map=config.LABEL_MAP,
-    #     test_size=config.TEST_SPLIT_SIZE,
-    #     val_size=config.VALIDATION_SPLIT_SIZE,
-    # )
-    # # Data Transform w/ feature extraction
-    # data_transform = T.Compose([
-    #     T.Resize((256, 256)),
-    #     T.ToTensor(),
-    # ])
-
-    # # # Data transform w/o feature extraction
-    # # data_transform = T.Compose([
-    # #     T.Resize((64, 64)),
-    # #     T.ToTensor(),
-    # # ])
-
-    # # Subset for quick debugging
-    # train_df = train_df.sample(n=100, random_state=42).reset_index(drop=True)
-    # test_df  = test_df.sample(n=100, random_state=42).reset_index(drop=True)
-
-    # train_ds = PlantDiseaseDataset(train_df, transform=data_transform)
-    # test_ds  = PlantDiseaseDataset(test_df,  transform=data_transform)
-
-    # feature_extraction_fn = extract_features_1
-
-    # X_train, y_train = load_and_prepare_data(train_ds, feature_extraction_fn)
-    # X_test, y_test = load_and_prepare_data(test_ds, feature_extraction_fn)
-
-    # # Scaler + SVM pipeline
-    # pipeline = Pipeline([
-    #     ('scaler', StandardScaler()),               
-    #     ('svc', SVC(class_weight='balanced', cache_size=5000, kernel='rbf'))
-    # ])
-
-    # # Hyperparameter tuning
-    # grid_search = GridSearchCV(
-    #     pipeline,
-    #     PARAM_GRID,
-    #     cv=5,
-    #     n_jobs=N_JOBS,
-    #     verbose=3,
-    #     return_train_score=True,
-    #     pre_dispatch=f"{N_JOBS * 2}*n_jobs"   # throttle the number of launched jobs
-    # )
-
-    # grid_search.fit(X_train, y_train)
-
-    # ### DEBUGGING (comment out above code) ###
 
 if __name__ == "__main__":
     train_and_evaluate()
