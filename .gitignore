@@ -178,4 +178,5 @@ cython_debug/
 /data
 *.out
 *.sh
+*.pkl
 *.pth
