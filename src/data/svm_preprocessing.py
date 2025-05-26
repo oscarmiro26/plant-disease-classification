@@ -1,9 +1,8 @@
-\
-# filepath: /scratch/s5142822/plant-disease-classification/src/data/svm_preprocessing.py
 from typing import Callable, Tuple
 import numpy as np
+import cv2
 from skimage import color, measure, util
-from skimage.filters import gabor
+from skimage.filters import gabor, threshold_otsu # Added gaussian
 from skimage.feature import (
     hog, 
     local_binary_pattern, 
@@ -15,124 +14,64 @@ from joblib import Parallel, delayed
 from .datasets import PlantDiseaseDataset # Assuming PlantDiseaseDataset is in datasets.py in the same directory
 
 
-def extract_features_1(img: np.ndarray) -> np.ndarray:
+def segment_leaf(image: np.ndarray) -> np.ndarray:
     """
-    Feature extraction #1: compute HOG and LBP descriptors from a single image.
-    Feature dimensions:
-    - HOG: 2048 features (8 orientations × 16 × 16)
-    - LBP: 10 features (10 bins)
-    Total: 2058 features.
+    Leaf segmentation using HSV pre-mask + GrabCut.
+
     Args:
-        img (np.ndarray): Input image array. Can be 2D (H×W) or
-                               3D (C×H×W) for RGB data.
+        image: H×W×3 uint8 RGB image as a NumPy array.
     Returns:
-        np.ndarray: Concatenated 1D feature vector [hog_feats | lbp_hist].
+        mask: H×W uint8 binary mask where leaf pixels are 255 and background is 0.
     """
-    # Convert to grayscale
-    gray_img = color.rgb2gray(img)
+    # === 1) Rough pre-mask via HSV threshold ===
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    lower = np.array([25, 40, 40])
+    upper = np.array([100, 255, 255])
+    rough = cv2.inRange(hsv, lower, upper)
 
-    # HOG on 2D gray image
-    hog_feats = hog(gray_img, orientations=8,
-                    pixels_per_cell=(16,16),
-                    cells_per_block=(1,1),
-                    block_norm='L2',
-                    visualize=False,
-                    feature_vector=True)
+    # === 2) Initialize GrabCut mask ===
+    #  - 0,2 = background; 1,3 = foreground
+    gc_mask = np.where(rough>0, cv2.GC_PR_FGD, cv2.GC_PR_BGD).astype('uint8')
+    bgdModel = np.zeros((1,65), np.float64)
+    fgdModel = np.zeros((1,65), np.float64)
 
-    # LBP on uint8
-    lbp_image = (gray_img * 255).astype(np.uint8)
-    lbp = local_binary_pattern(lbp_image, P=8, R=1, method='uniform')
-    lbp_hist, _ = np.histogram(lbp, bins=10, range=(0, 10))
-    lbp_hist = lbp_hist.astype(np.float32)
-    lbp_hist /= (lbp_hist.sum() + 1e-6)
+    #  Define a rectangle inset by 5% on each side (for safety)
+    h, w = image.shape[:2]
+    pad_h, pad_w = int(0.05*h), int(0.05*w)
+    rect = (pad_w, pad_h, w-2*pad_w, h-2*pad_h)
 
-    return np.concatenate([hog_feats, lbp_hist])
+    # === 3) Run GrabCut ===
+    cv2.grabCut(image, gc_mask, rect, bgdModel, fgdModel, 
+                iterCount=5, mode=cv2.GC_INIT_WITH_MASK)
 
-def extract_features_2(img: np.ndarray) -> np.ndarray:
+    # === 4) Build final mask ===
+    mask = np.where(
+        (gc_mask==cv2.GC_FGD) | (gc_mask==cv2.GC_PR_FGD), 
+        255, 
+        0
+    ).astype('uint8')
+
+    # === 5) Morphological cleanup ===
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7,7))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN,  kernel, iterations=1)
+
+    # === 6) Final thresholding to remove noise ===
+    thresh = threshold_otsu(mask)
+    mask = (mask > thresh).astype('uint8') * 255
+    # === 7) Segment the leaf from the original image ===
+    segmented_leaf = cv2.bitwise_and(image, image, mask=mask)
+
+    return segmented_leaf
+
+def extract_features(img: np.ndarray) -> np.ndarray:
     """
-    Feature extraction #2: compute HSV histograms, GLCM texture stats,
-    and shape descriptors from a single RGB image.
-    Feature dimensions:
-    - Color (HSV): 48 features (16 bins × 3 channels)
-    - Texture (GLCM): 16 features (4 angles × 4 stats)
-    - Shape: 11 features (lesion count, mean area, std area, mean perimeter,
-      area, perimeter, eccentricity, solidity, extent, major axis length,
-      aspect ratio)
-    Total: 75 features.
-    Args:
-        image_np (np.ndarray): Input RGB image array of shape (256, 256, 3).
-
-    Returns:
-        np.ndarray: Concatenated feature vector [color | texture | shape].
-    """
-    # Ensure float in [0,1]
-    image = util.img_as_float(img)
-
-    # Color (HSV)
-    hsv = color.rgb2hsv(image, channel_axis=2)
-    h_hist, _ = np.histogram(hsv[:, :, 0], bins=16, range=(0, 1), density=True)
-    s_hist, _ = np.histogram(hsv[:, :, 1], bins=16, range=(0, 1), density=True)
-    v_hist, _ = np.histogram(hsv[:, :, 2], bins=16, range=(0, 1), density=True)
-    color_features = np.concatenate([h_hist, s_hist, v_hist])
-
-    # Texture (GLCM)
-    gray = color.rgb2gray(image)
-    gray_u8 = util.img_as_ubyte(gray)
-    glcm = graycomatrix(
-        gray_u8,
-        distances=[1],
-        angles=[0, np.pi / 4, np.pi / 2, 3 * np.pi / 4],
-        symmetric=True,
-        normed=True,
-    )
-    props = ["contrast", "homogeneity", "energy", "correlation"]
-    texture_features = np.hstack([graycoprops(glcm, p).flatten() for p in props])
-
-    # Shape descriptors
-    binary = gray_u8 > 0
-    regions = measure.regionprops(measure.label(binary))
-    # Lesion count & size statistics
-    lesion_count = len(regions)
-    if lesion_count > 0:
-        areas     = np.array([r.area for r in regions], dtype=np.float32)
-        perims    = np.array([r.perimeter for r in regions], dtype=np.float32)
-        mean_area = areas.mean()
-        std_area  = areas.std()
-        mean_perim= perims.mean()
-    else:
-        mean_area = std_area = mean_perim = 0.0
-
-    # Shape features from largest region
-    if regions:
-        r         = max(regions, key=lambda reg: reg.area)
-        area      = float(r.area)
-        perimeter = float(r.perimeter)
-        ecc       = float(r.eccentricity)
-        solidity  = float(r.solidity)
-        extent    = float(r.extent)
-        maj       = float(r.major_axis_length)
-        min_      = float(r.minor_axis_length or 1.0)
-        aspect    = maj / min_
-    else:
-        area = perimeter = ecc = solidity = extent = maj = aspect = 0.0
-
-    shape_features = np.array([
-        lesion_count, mean_area, std_area, mean_perim,
-        area, perimeter, ecc, solidity, extent, maj, aspect
-    ], dtype=np.float32)
-
-    # Concatenate all features
-    features = np.concatenate([color_features, texture_features, shape_features], axis=0)
-
-    return features
-
-def extract_features_3(img: np.ndarray) -> np.ndarray:
-    """
-    Feature extraction #3: Compute Gabor filter and HSV histogram features.
+    Feature extraction method: Compute Gabor filter and HSV histogram features.
     Feature dimensions:
     - Gabor: 32 features (4 frequencies × 4 orientations × 2 stats)
     - HSV: 48 features (16 bins × 3 channels)
     Total: 80 features.
+
     Args:
         image_np (np.ndarray): Input RGB image array of shape (256, 256, 3).
     Returns:

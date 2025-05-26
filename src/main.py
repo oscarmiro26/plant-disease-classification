@@ -1,14 +1,15 @@
 import io
 import joblib
 import uvicorn
-from typing import Annotated # Added import
+from typing import Annotated
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Depends # Added Depends
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Depends
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, validator # Added validator
+from pydantic import BaseModel, validator, Field # Added Field
 from PIL import Image
 import numpy as np
-from .data.svm_preprocessing import extract_features_3
+from .data.svm_preprocessing import segment_leaf, extract_features
+from .training.config import INV_LABEL_MAP
 
 # Define allowed image types globally
 ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/JPEG", "image/png"]
@@ -19,9 +20,10 @@ class ModelInput(BaseModel):
     Uses Annotated to specify that fields come from Form and File.
     Includes validators for model_type and file content_type.
     """
-    model_type: Annotated[str, Form()]
-    file: Annotated[UploadFile, File()]
+    model_type: Annotated[str, Form(description="Model to use; only svm supported", example="svm")]
+    file: Annotated[UploadFile, File(description="Image file to classify (JPEG or PNG)")]
 
+    # Only SVM works for now; Add ResNet later
     @validator('model_type')
     def validate_model_type(cls, v: str) -> str:
         if v.lower() != "svm":
@@ -38,19 +40,33 @@ class ModelInput(BaseModel):
             )
         return v
 
+# Define the response model
+class PredictionResponse(BaseModel):
+    model: str = Field(..., example="svm", description="The type of model used for prediction.")
+    prediction: str = Field(..., example="Apple___healthy", description="The predicted class or disease of the plant.")
+
 # Global variable to hold the SVM model
 svm_model = None # Corrected from svm_pipeline to svm_model for consistency
 
 # Create a FastAPI app instance
-app = FastAPI()
+app = FastAPI(
+    title="Plant Disease Classification API",
+    description="API for classifying plant diseases from leaf images using an SVM model.",
+    version="1.0.0",
+)
 
-@app.get("/")
+@app.get(
+    "/",
+    tags=["General"],
+    summary="Root Endpoint",
+    description="Returns a welcome message indicating the API is running and provides a link to the API documentation."
+)
 async def root():
     """
     Root endpoint to check if the server is running.
-    Returns a simple message indicating the server is up.
+    Returns a simple message indicating the server is up and provides a link to the docs.
     """
-    return {"message": "Plant Disease Classification API is running."}
+    return {"message": "Plant Disease Classification API is running. Visit /docs for API documentation."}
 
 @app.on_event("startup")
 async def load_model():
@@ -67,7 +83,13 @@ async def load_model():
         print(f"Error loading SVM model: {e}")
         # Handle other potential errors during model loading
 
-@app.post("/predict/")
+@app.post(
+    "/predict/",
+    response_model=PredictionResponse,
+    tags=["Classification"],
+    summary="Predict Plant Disease",
+    description="Upload an image of a plant leaf (JPEG or PNG) and specify the model type ('svm') to classify its disease. The API will return the model used and the predicted disease class."
+)
 async def predict(input_data: ModelInput = Depends()):
     """
     Receives an image and a model type (via form data), predicts the class using the loaded SVM pipeline.
@@ -90,6 +112,8 @@ async def predict(input_data: ModelInput = Depends()):
         img = Image.open(io.BytesIO(contents))
         # Convert PIL image to NumPy array (RGB)
         img_np = np.array(img.convert("RGB"))
+        # Segment leaf
+        segmented_img = segment_leaf(img_np)
 
     except HTTPException: # Re-raise HTTPExceptions explicitly
         raise
@@ -101,18 +125,19 @@ async def predict(input_data: ModelInput = Depends()):
 
     try:
         # Extract features using the same function used during training
-        features = extract_features_3(img_np)
+        features = extract_features(segmented_img)
         # Make a prediction using the SVM pipeline
-        prediction = svm_model.predict([features])[0]
+        pred = svm_model.predict([features])[0]
+        # Map the prediction to a class label using the inverse label map
+        class_label = INV_LABEL_MAP.get(pred, "Unknown class")
     except Exception as e:
         # Handle errors during the prediction phase
         raise HTTPException(status_code=500, detail=f"Error during prediction: {e}")
 
     # Return the model type and the prediction as a JSON response
-    return JSONResponse(content={"model": input_data.model_type, "prediction": prediction})
+    return JSONResponse(content={"model": input_data.model_type, "prediction": class_label})
 
 if __name__ == "__main__":
     # Run the FastAPI application using Uvicorn
-    # host="0.0.0.0" makes the server accessible externally
     # reload=True enables auto-reloading when code changes (for development)
-    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("src.main:app", reload=True)

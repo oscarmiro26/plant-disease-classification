@@ -22,9 +22,7 @@ import torchvision.transforms as T
 from ..data.splitting import create_splits
 from ..data.datasets import PlantDiseaseDataset
 from ..data.svm_preprocessing import (
-    extract_features_1,
-    extract_features_2,
-    extract_features_3,
+    extract_features,
     load_and_prepare_data,
 )
 from ..training import config
@@ -94,32 +92,33 @@ def train_and_evaluate():
     train_df = pd.concat([train_df, val_df], ignore_index=True)
     logger.info("Creating datasets...")
 
+    # Define data transformations
     data_transform = T.Compose([
         T.Resize((256, 256)),
         T.ToTensor(),
     ])
 
+    # Create datasets
     train_ds = PlantDiseaseDataset(train_df, transform=data_transform)
     test_ds  = PlantDiseaseDataset(test_df,  transform=data_transform)
-
-    # feature_extraction_fn = extract_features_1
-    # feature_extraction_fn.__name__ = "HOG_LBP" # Set the name for logging
-    # feature_extraction_fn = extract_features_2
-    # feature_extraction_fn.__name__ = "GLCM_Shape_HSV" # Set the name for logging
-    feature_extraction_fn = extract_features_3
+    
+    # Feature extraction function
+    feature_extraction_fn = extract_features
     feature_extraction_fn.__name__ = "Gabor_HSV" # Set the name for logging
 
     # Load and prepare data for SVM
     logger.info("Loading and preparing training data for SVM using feature extraction: %s", feature_extraction_fn.__name__)
     X_train, y_train = load_and_prepare_data(train_ds, feature_extraction_fn, n_jobs=N_JOBS)
     logger.info(f"Training data shape: Features {X_train.shape}, Labels {y_train.shape}")
-
     logger.info("Loading and preparing test data for SVM...")
     X_test, y_test = load_and_prepare_data(test_ds, feature_extraction_fn, n_jobs=N_JOBS)
     logger.info(f"Test data shape: Features {X_test.shape}, Labels {y_test.shape}")
 
     logger.info("Data preparation complete. Commencing SVM training...")
 
+    # Define the SVM pipeline
+    # Using StandardScaler, VarianceThreshold, CorrelationFilter, PCA, and SVC
+    logger.info("Setting up SVM pipeline with preprocessing and model...")
     pipeline = Pipeline([
         ('scaler',          StandardScaler()),
         ('var_thresh',      VarianceThreshold(threshold=1e-3)),
