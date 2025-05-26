@@ -36,6 +36,8 @@ GAMMA             = 0.1
 MIX_ALPHA         = 0.7
 PATIENCE          = 10
 
+VERBOSE_LOGGING   = True
+
 # Logging setup
 logger, RUN_DIR = setup_logger(
     model_name="resnet50",
@@ -60,6 +62,13 @@ val_transform = transforms.Compose([
 
 def train_and_evaluate():
     logger.info(f"Starting training run.")
+
+    if VERBOSE_LOGGING:
+        import shutil
+        script_src = os.path.abspath(__file__)
+        script_dst = os.path.join(RUN_DIR, os.path.basename(__file__))
+        shutil.copy(script_src, script_dst)
+        logger.info(f"Copied main script to {script_dst}")
 
     # Data splits
     train_df, val_df, test_df = create_splits(
