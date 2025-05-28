@@ -10,9 +10,12 @@ from PIL import Image
 import numpy as np
 from .data.svm_preprocessing import segment_leaf, extract_features
 from .training.config import INV_LABEL_MAP
+import torch
+import torchvision
 
 # Define allowed image types globally
 ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/JPEG", "image/png"]
+ALLOWED_MODELS = ["svm", "resnet"]
 
 class ModelInput(BaseModel):
     """
@@ -26,9 +29,10 @@ class ModelInput(BaseModel):
     # Only SVM works for now; Add ResNet later
     @validator('model_type')
     def validate_model_type(cls, v: str) -> str:
-        if v.lower() != "svm":
-            raise ValueError("Invalid model_type. Only 'svm' is supported.")
-        return v.lower()
+        v = v.lower()
+        if v not in ALLOWED_MODELS:
+            raise ValueError(f"Invalid model_type. Supported: {', '.join(ALLOWED_MODELS)}")
+        return v
 
     @validator('file')
     def validate_file_type(cls, v: UploadFile) -> UploadFile:
@@ -47,6 +51,7 @@ class PredictionResponse(BaseModel):
 
 # Global variable to hold the SVM model
 svm_model = None # Corrected from svm_pipeline to svm_model for consistency
+resnet_model = None
 
 # Create a FastAPI app instance
 app = FastAPI(
@@ -82,6 +87,21 @@ async def load_model():
     except Exception as e:
         print(f"Error loading SVM model: {e}")
         # Handle other potential errors during model loading
+    
+    try:
+        # Instantiate a ResNet50, adjust final layer for your number of classes
+        base = models.resnet50(pretrained=False)
+        num_classes = len(INV_LABEL_MAP)
+        base.fc = torch.nn.Linear(base.fc.in_features, num_classes)
+        # Load your trained weights
+        state = torch.load("src/models/resnet50_9897.pth", map_location="cpu")
+        base.load_state_dict(state)
+        base.eval()
+        resnet_model = base
+    except FileNotFoundError:
+        print("Error: Model file 'src/models/resnet50_9897.pth' not found.")
+    except Exception as e:
+        print(f"Error loading ResNet model: {e}")
 
 @app.post(
     "/predict/",
@@ -97,6 +117,8 @@ async def predict(input_data: ModelInput = Depends()):
     """
     if svm_model is None:
         raise HTTPException(status_code=503, detail="SVM model not loaded. Check server logs.")
+    if resnet_model is None and input_data.model_type == "resnet":
+        raise HTTPException(status_code=503, detail="ResNet model not loaded. Check server logs.")
 
     # model_type and file are accessed via input_data.
     # Pydantic validators in ModelInput have already checked model_type and file.content_type.
@@ -123,15 +145,23 @@ async def predict(input_data: ModelInput = Depends()):
         # If there's an error opening or processing the image, return an error response
         raise HTTPException(status_code=400, detail=f"Could not process image file: {e}")
 
+    # Dispatch to the chosen model
     try:
-        # Extract features using the same function used during training
-        features = extract_features(segmented_img)
-        # Make a prediction using the SVM pipeline
-        pred = svm_model.predict([features])[0]
-        # Map the prediction to a class label using the inverse label map
-        class_label = INV_LABEL_MAP.get(pred, "Unknown class")
+        if input_data.model_type == "svm":
+            features = extract_features(segmented_img)
+            pred = svm_model.predict([features])[0]
+            class_label = INV_LABEL_MAP.get(pred, "Unknown class")
+
+        else:  # resnet
+            # Prepare pytorch input
+            preprocess = None
+            # segmented_img is a np.ndarray; convert and preprocess
+            tensor = preprocess(segmented_img).unsqueeze(0)
+            with torch.no_grad():
+                outputs = resnet_model(tensor)
+                _, idx = outputs.max(1)
+            class_label = INV_LABEL_MAP.get(idx.item(), "Unknown class")
     except Exception as e:
-        # Handle errors during the prediction phase
         raise HTTPException(status_code=500, detail=f"Error during prediction: {e}")
 
     # Return the model type and the prediction as a JSON response
