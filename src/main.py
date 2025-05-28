@@ -46,7 +46,7 @@ class ModelInput(BaseModel):
 
 # Define the response model
 class PredictionResponse(BaseModel):
-    model: str = Field(..., example="svm", description="The type of model used for prediction.")
+    model: str = Field(..., example="svm or resnet", description="The type of model used for prediction.")
     prediction: str = Field(..., example="Apple___healthy", description="The predicted class or disease of the plant.")
 
 # Global variable to hold the SVM model
@@ -56,7 +56,7 @@ resnet_model = None
 # Create a FastAPI app instance
 app = FastAPI(
     title="Plant Disease Classification API",
-    description="API for classifying plant diseases from leaf images using an SVM model.",
+    description="API for classifying plant diseases from leaf images using a either an SVM or a ResNet model.",
     version="1.0.0",
 )
 
@@ -108,7 +108,7 @@ async def load_model():
     response_model=PredictionResponse,
     tags=["Classification"],
     summary="Predict Plant Disease",
-    description="Upload an image of a plant leaf (JPEG or PNG) and specify the model type ('svm') to classify its disease. The API will return the model used and the predicted disease class."
+    description="Upload an image of a plant leaf (JPEG or PNG) and specify the model type ('svm' or 'resnet') to classify its disease. The API will return the model used and the predicted disease class."
 )
 async def predict(input_data: ModelInput = Depends()):
     """
@@ -125,17 +125,29 @@ async def predict(input_data: ModelInput = Depends()):
 
     try:
         # Read the image file bytes
+        if input_data.model_type == "svm":
+            # Load the SVM model from the joblib file
+            model = joblib.load("src/training/svm.pkl")
+        elif input_data.model_type == "resnet":
+            # ## ##
+            # Load the ResNet model here (make sure its in the /models folder)
+            # ## ##
+            pass
+        elif model is None:
+            raise HTTPException(status_code=500, detail="Please input a valid model type.")
         contents = await input_data.file.read()
         # Ensure file is not empty after reading
         if not contents:
-            raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+            raise HTTPException(status_code=400, detail="Please upload a non-empty image file.")
         
         # Open the image using Pillow
         img = Image.open(io.BytesIO(contents))
-        # Convert PIL image to NumPy array (RGB)
-        img_np = np.array(img.convert("RGB"))
-        # Segment leaf
-        segmented_img = segment_leaf(img_np)
+        # This depends on the model; if using SVM, we need to convert to RGB and segment the leaf first.
+        if input_data.model_type == "svm":
+            # Convert PIL image to NumPy array (RGB)
+            img_np = np.array(img.convert("RGB"))
+            # Segment leaf (if using an SVM, but decide if the ResNet model needs this)
+            segmented_img = segment_leaf(img_np)
 
     except HTTPException: # Re-raise HTTPExceptions explicitly
         raise
