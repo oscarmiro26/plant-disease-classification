@@ -149,9 +149,11 @@ def train_and_evaluate():
         class_balanced=True
     )
 
-    optimizer = torch.optim.Adam([
+    optimizer = torch.optim.AdamW([
         {'params': model.fc.parameters(), 'lr': LR_CLASSIFIER},
-    ])
+    ], weight_decay=1e-4)
+
+
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
 
     best_val_loss = float('inf')
