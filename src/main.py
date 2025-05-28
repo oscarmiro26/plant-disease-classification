@@ -5,7 +5,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Depends
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, validator, Field # Added Field
+from pydantic import BaseModel, validator, Field
 from PIL import Image
 import numpy as np
 from .data.svm_preprocessing import segment_leaf, extract_features
@@ -13,9 +13,9 @@ from .training.config import INV_LABEL_MAP
 import torch
 import torchvision
 
-# Define allowed image types globally
+# Define allowed image and model types globally
 ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/JPEG", "image/png"]
-ALLOWED_MODELS = ["svm", "resnet"]
+ALLOWED_MODELS = ["svm", "resnet"] ## Add other models here
 
 class ModelInput(BaseModel):
     """
@@ -26,7 +26,6 @@ class ModelInput(BaseModel):
     model_type: Annotated[str, Form(description="Model to use; only svm supported", example="svm")]
     file: Annotated[UploadFile, File(description="Image file to classify (JPEG or PNG)")]
 
-    # Only SVM works for now; Add ResNet later
     @validator('model_type')
     def validate_model_type(cls, v: str) -> str:
         v = v.lower()
@@ -56,7 +55,7 @@ resnet_model = None
 # Create a FastAPI app instance
 app = FastAPI(
     title="Plant Disease Classification API",
-    description="API for classifying plant diseases from leaf images using a either an SVM or a ResNet model.",
+    description="API for classifying plant diseases from leaf images using a selection of our models (SVM, ResNet50).", ### Add new models in the desc.
     version="1.0.0",
 )
 
@@ -76,12 +75,12 @@ async def root():
 @app.on_event("startup")
 async def load_model():
     """
-    Load the SVM pipeline from the specified path when the application starts.
+    Load the models from the specified path when the application starts.
     """
     global svm_model
     global resnet_model
+    # global ___ 
     try:
-        # Load the pre-trained SVM pipeline using joblib
         svm_model = joblib.load("src/models/svm.pkl")
     except FileNotFoundError:
         print("Error: Model file 'src/models/svm.pkl' not found.")
@@ -103,29 +102,30 @@ async def load_model():
         print("Error: Model file 'src/models/resnet50_9897.pth' not found.")
     except Exception as e:
         print(f"Error loading ResNet model: {e}")
+    ## Add other models here
 
 @app.post(
     "/predict/",
     response_model=PredictionResponse,
     tags=["Classification"],
     summary="Predict Plant Disease",
-    description="Upload an image of a plant leaf (JPEG or PNG) and specify the model type ('svm' or 'resnet') to classify its disease. The API will return the model used and the predicted disease class."
+    description="Upload an image of a plant leaf (JPEG or PNG) and specify the model type ('svm' / 'resnet' / ___ ) to classify its disease. The API will return the model used and the predicted disease class." # !!! Add your new model in the description !!! #
 )
 async def predict(input_data: ModelInput = Depends()):
     """
-    Receives an image and a model type (via form data), predicts the class using the loaded SVM pipeline.
+    Receives an image and a model type (via form data), predicts the class using the loaded model.
     Input validation (model_type, file type) is handled by the Pydantic ModelInput.
     """
     if svm_model is None and input_data.model_type == "svm":
         raise HTTPException(status_code=503, detail="SVM model not loaded. Check server logs.")
     if resnet_model is None and input_data.model_type == "resnet":
         raise HTTPException(status_code=503, detail="ResNet model not loaded. Check server logs.")
+    ## Add other models here
 
     # model_type and file are accessed via input_data.
     # Pydantic validators in ModelInput have already checked model_type and file.content_type.
 
     try:
-        # Read the image file bytes
         if input_data.model_type == "svm":
             # Load the SVM model from the joblib file
             model = svm_model
@@ -141,10 +141,12 @@ async def predict(input_data: ModelInput = Depends()):
         
         # Open the image using Pillow
         img = Image.open(io.BytesIO(contents))
-        # This depends on the model; if using SVM, we need to convert to RGB and segment the leaf first.
+        # Convert PIL image to NumPy array (RGB)
+        img_np = np.array(img.convert("RGB"))
+        
+        ### This depends on the model; if using SVM, we need to segment the leaf first.
+        ### If other models work fine with segmentation, then remove the if statement.
         if input_data.model_type == "svm":
-            # Convert PIL image to NumPy array (RGB)
-            img_np = np.array(img.convert("RGB"))
             # Segment leaf (if using an SVM, but decide if the ResNet model needs this)
             segmented_img = segment_leaf(img_np)
 
@@ -156,18 +158,18 @@ async def predict(input_data: ModelInput = Depends()):
         # If there's an error opening or processing the image, return an error response
         raise HTTPException(status_code=400, detail=f"Could not process image file: {e}")
 
-    # Dispatch to the chosen model
+    # Dispatch to the chosen model (Add predictions for your model here as well)
     try:
         if input_data.model_type == "svm":
             features = extract_features(segmented_img)
             pred = svm_model.predict([features])[0]
             class_label = INV_LABEL_MAP.get(pred, "Unknown class")
 
-        else:  # resnet
+        if input_data.model_type == "resnet":  # resnet
             # Prepare pytorch input
             preprocess = None
             # segmented_img is a np.ndarray; convert and preprocess
-            tensor = preprocess(segmented_img).unsqueeze(0)
+            tensor = preprocess(img_np).unsqueeze(0)
             with torch.no_grad():
                 outputs = resnet_model(tensor)
                 _, idx = outputs.max(1)
