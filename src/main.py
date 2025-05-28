@@ -49,8 +49,8 @@ class PredictionResponse(BaseModel):
     model: str = Field(..., example="svm or resnet", description="The type of model used for prediction.")
     prediction: str = Field(..., example="Apple___healthy", description="The predicted class or disease of the plant.")
 
-# Global variable to hold the SVM model
-svm_model = None # Corrected from svm_pipeline to svm_model for consistency
+# Global variable to hold models
+svm_model = None 
 resnet_model = None
 
 # Create a FastAPI app instance
@@ -79,6 +79,7 @@ async def load_model():
     Load the SVM pipeline from the specified path when the application starts.
     """
     global svm_model
+    global resnet_model
     try:
         # Load the pre-trained SVM pipeline using joblib
         svm_model = joblib.load("src/models/svm.pkl")
@@ -115,7 +116,7 @@ async def predict(input_data: ModelInput = Depends()):
     Receives an image and a model type (via form data), predicts the class using the loaded SVM pipeline.
     Input validation (model_type, file type) is handled by the Pydantic ModelInput.
     """
-    if svm_model is None:
+    if svm_model is None and input_data.model_type == "svm":
         raise HTTPException(status_code=503, detail="SVM model not loaded. Check server logs.")
     if resnet_model is None and input_data.model_type == "resnet":
         raise HTTPException(status_code=503, detail="ResNet model not loaded. Check server logs.")
@@ -127,18 +128,16 @@ async def predict(input_data: ModelInput = Depends()):
         # Read the image file bytes
         if input_data.model_type == "svm":
             # Load the SVM model from the joblib file
-            model = joblib.load("src/training/svm.pkl")
+            model = svm_model
         elif input_data.model_type == "resnet":
-            # ## ##
-            # Load the ResNet model here (make sure its in the /models folder)
-            # ## ##
-            pass
+            # Use the pre-loaded ResNet model
+            model = resnet_model
         elif model is None:
-            raise HTTPException(status_code=500, detail="Please input a valid model type.")
+            raise HTTPException(status_code=500, detail="Model not loaded. Check server logs.")
         contents = await input_data.file.read()
         # Ensure file is not empty after reading
         if not contents:
-            raise HTTPException(status_code=400, detail="Please upload a non-empty image file.")
+            raise HTTPException(status_code=400, detail="File not loaded. Please upload a valid image file.")
         
         # Open the image using Pillow
         img = Image.open(io.BytesIO(contents))
