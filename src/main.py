@@ -11,7 +11,7 @@ import numpy as np
 from .data.svm_preprocessing import segment_leaf, extract_features
 from .training.config import INV_LABEL_MAP
 import torch
-import torchvision
+from torchvision import models
 
 # Define allowed image types globally
 ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/JPEG", "image/png"]
