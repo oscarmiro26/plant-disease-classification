@@ -12,6 +12,8 @@ from .data.svm_preprocessing import segment_leaf, extract_features
 from .training.config import INV_LABEL_MAP
 import torch
 from torchvision import models
+import torchvision.transforms as T
+from .data.preprocessing import normalize_transform
 
 # Define allowed image and model types globally
 ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/JPEG", "image/png"]
@@ -167,7 +169,13 @@ async def predict(input_data: ModelInput = Depends()):
 
         if input_data.model_type == "resnet":  # resnet
             # Prepare pytorch input
-            preprocess = None
+            preprocess = T.Compose([
+                T.ToPILImage(),
+                T.Resize(256),
+                T.CenterCrop(224),
+                T.ToTensor(),
+                normalize_transform,
+            ])
             # segmented_img is a np.ndarray; convert and preprocess
             tensor = preprocess(img_np).unsqueeze(0)
             with torch.no_grad():
