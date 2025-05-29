@@ -1,6 +1,6 @@
 # Plant Disease Classification FastAPI Service
 
-This service provides an API endpoint for classifying plant diseases from images using a pre-trained scikit-learn SVM pipeline.
+This service provides an API endpoint for classifying plant diseases from images using a selection of our ML models (incl. SVM, ResNet50, ResNet Ensemble).
 
 ## Setup
 
@@ -22,12 +22,16 @@ This service provides an API endpoint for classifying plant diseases from images
     pip install -r requirements.txt
     ```
 
-4.  **Place the SVM model:**
-    Ensure your trained SVM pipeline is saved as `svm.pkl` inside the `src/models/` directory. If the `src/models/` directory doesn't exist, create it.
-
 ## Running the Service
 
 To start the FastAPI service, navigate to the root directory and run the `main.py` script using Uvicorn:
 
 ```bash
 uvicorn src.main:app
+```
+
+If it takes a while to load try refreshing. Once the API is up and running, go to '/docs' by typing it in the search bar.
+
+## Using the API
+
+Click on `POST` and `Try it out`. Then, enter the model type you want to use and upload an image (samples are available in `/samples'`. Download them first before you upload). Next, press `Execute` and you will see the prediction results under `Responses` along with the curl message.
