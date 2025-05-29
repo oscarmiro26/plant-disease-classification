@@ -6,6 +6,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Depends
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, validator, Field
 from PIL import Image
 import numpy as np
@@ -20,14 +21,31 @@ from .data.preprocessing import normalize_transform
 ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/JPEG", "image/png"]
 ALLOWED_MODELS = ["svm", "resnet"] ## Add other models here
 
+
 class ModelInput(BaseModel):
     """
     Pydantic model for the input data to the prediction endpoint.
     Uses Annotated to specify that fields come from Form and File.
     Includes validators for model_type and file content_type.
     """
-    model_type: Annotated[str, Form(description="Models to use.", example="svm")]
-    file: Annotated[UploadFile, File(description="Image file to classify (JPEG or PNG)")]
+    model_type: Annotated[
+        str,
+        Form(
+            ..., 
+            title="Model Selection",
+            description="Choose which model to use for inference",
+            example="resnet"
+        )
+    ]
+    file: Annotated[
+        UploadFile,
+        File(
+            ..., 
+            title="Leaf Image",
+            description="Upload a JPEG or PNG of the plant leaf",
+            example="example_leaf.jpg"
+        )
+    ]
 
     @validator('model_type')
     def validate_model_type(cls, v: str) -> str:
@@ -63,17 +81,41 @@ app = FastAPI(
     version="1.0.0",
 )
 
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    # Return 400 instead of 422, with a clear schema
+    return JSONResponse(
+        status_code=400,
+        content={
+            "detail": [
+                {"loc": err["loc"], "msg": err["msg"], "type": err["type"]}
+                for err in exc.errors()
+            ]
+        },
+    )
+
 @app.get(
     "/",
     tags=["General"],
-    summary="Root Endpoint",
-    description="Returns a welcome message indicating the API is running and provides a link to the API documentation."
+    summary="Get API Status",
+    description=(
+        "Returns 200 if the service is live.  Use this endpoint to check "
+        "that the API is running and to discover your documentation URL."
+    ),
+    responses={
+        200: {
+            "description": "API is up and running",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "Plant Disease Classification API is running. Visit /docs for API documentation."
+                    }
+                }
+            }
+        }
+    }
 )
 async def root():
-    """
-    Root endpoint to check if the server is running.
-    Returns a simple message indicating the server is up and provides a link to the docs.
-    """
     return {"message": "Plant Disease Classification API is running. Visit /docs for API documentation."}
 
 @app.on_event("startup")
@@ -115,13 +157,65 @@ async def load_model():
     except Exception as e:
         print(f"Error loading ResNet model: {e}")
 
+
 @app.post(
     "/predict/",
     response_model=PredictionResponse,
     tags=["Classification"],
     summary="Predict Plant Disease",
-    description="Upload an image of a plant leaf (JPEG or PNG) and specify the model type ('svm' / 'resnet') to classify its disease. The API will return the model used and the predicted disease class."
+    description=(
+        "Provide a plant-leaf image and choose either 'svm' or 'resnet' to "
+        "receive a disease prediction."
+    ),
+    responses={
+        200: {
+            "description": "Successful prediction",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "model": "resnet",
+                        "prediction": "Tomato___Late_blight"
+                    }
+                }
+            }
+        },
+        400: {
+            "description": "Bad request—invalid or missing input",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": [
+                            {
+                                "loc": ["body","model_type"],
+                                "msg": "Invalid model_type. Supported: svm, resnet",
+                                "type": "value_error"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        422: {
+            "description": "Validation Error (invalid form data)",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": [
+                            {
+                                "loc": ["body","model_type"],
+                                "msg": "field required",
+                                "type": "value_error.missing"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        500: {"description": "Server error, model not loaded or processing failed"},
+    },
 )
+
+
 async def predict(input_data: ModelInput = Depends()):
     """
     Receives an image and a model type (via form data), predicts the class using the loaded model.
@@ -191,8 +285,13 @@ async def predict(input_data: ModelInput = Depends()):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during prediction: {e}")
 
-    # Return the model type and the prediction as a JSON response
-    return JSONResponse(content={"model": input_data.model_type, "prediction": class_label})
+    response = JSONResponse(
+        content={"model": input_data.model_type, "prediction": class_label},
+        status_code=200
+    )
+    response.headers["Cache-Control"] = "public, max-age=3600"
+    return response
+
 
 if __name__ == "__main__":
     # Run the FastAPI application using Uvicorn
