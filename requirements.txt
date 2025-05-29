@@ -69,7 +69,7 @@ pyparsing==3.2.3
 python-dateutil==2.9.0.post0
 python-multipart==0.0.20
 pytz==2025.2
-pywin32==310
+pywin32==310; sys_platform == "win32"
 PyYAML==6.0.2
 pyzmq==26.4.0
 requests==2.32.3
