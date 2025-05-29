@@ -1,4 +1,5 @@
 import io
+import os
 import joblib
 import uvicorn
 from typing import Annotated
@@ -9,7 +10,7 @@ from pydantic import BaseModel, validator, Field
 from PIL import Image
 import numpy as np
 from .data.svm_preprocessing import segment_leaf, extract_features
-from .training.config import INV_LABEL_MAP
+from .training import config
 import torch
 from torchvision import models
 import torchvision.transforms as T
@@ -83,7 +84,7 @@ async def load_model():
     global resnet_model
     # global ___ 
     try:
-        svm_model = joblib.load("src/models/svm.pkl")
+        svm_model = joblib.load(os.path.join(config.MODELS_DIR, "svm.pkl"))
     except FileNotFoundError:
         print("Error: Model file 'src/models/svm.pkl' not found.")
     except Exception as e:
@@ -93,10 +94,10 @@ async def load_model():
     try:
         # Instantiate a ResNet50, adjust final layer for your number of classes
         base = models.resnet50(pretrained=False)
-        num_classes = len(INV_LABEL_MAP)
+        num_classes = len(config.INV_LABEL_MAP)
         base.fc = torch.nn.Linear(base.fc.in_features, num_classes)
         # Load your trained weights
-        state = torch.load("src/models/resnet50_9897.pth", map_location="cpu")
+        state = torch.load(os.path.join(config.MODELS_DIR, "resnet50_9897.pth"), map_location="cpu")
         base.load_state_dict(state)
         base.eval()
         resnet_model = base
@@ -165,12 +166,11 @@ async def predict(input_data: ModelInput = Depends()):
         if input_data.model_type == "svm":
             features = extract_features(segmented_img)
             pred = svm_model.predict([features])[0]
-            class_label = INV_LABEL_MAP.get(pred, "Unknown class")
+            class_label = config.INV_LABEL_MAP.get(pred, "Unknown class")
 
         if input_data.model_type == "resnet":  # resnet
             # Prepare pytorch input
             preprocess = T.Compose([
-                T.ToPILImage(),
                 T.Resize(256),
                 T.CenterCrop(224),
                 T.ToTensor(),
@@ -181,7 +181,7 @@ async def predict(input_data: ModelInput = Depends()):
             with torch.no_grad():
                 outputs = resnet_model(tensor)
                 _, idx = outputs.max(1)
-            class_label = INV_LABEL_MAP.get(idx.item(), "Unknown class")
+            class_label = config.INV_LABEL_MAP.get(idx.item(), "Unknown class")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during prediction: {e}")
 

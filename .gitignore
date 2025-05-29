@@ -180,4 +180,4 @@ cython_debug/
 *.sh
 *.pkl
 *.pth
-!src/models/*
+!outputs/models/*
