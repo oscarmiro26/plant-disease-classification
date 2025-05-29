@@ -39,6 +39,7 @@ You can run the service directly using a virtual environment or by using Docker.
     python -m venv venv
     source venv/bin/activate  # On Windows use `venv\Scripts\activate`
     ```
+    (Note: many of the project dependencies are not compatible with Python versions above 3.11 or below 3.7.)
 
 2.  **Install dependencies:**
     Make sure you have `pip` installed. From the project's root directory (`main/`), run:
