@@ -97,7 +97,13 @@ async def load_model():
         # Instantiate a ResNet50, adjust final layer for the number of classes
         base = models.resnet50(pretrained=False)
         num_classes = len(INV_LABEL_MAP)
-        base.fc = torch.nn.Linear(base.fc.in_features, num_classes)
+        num_ftrs = base.fc.in_features
+        base.fc = torch.nn.Sequential(
+            torch.nn.Linear(num_ftrs, 512),
+            torch.nn.ReLU(inplace=True),
+            torch.nn.Dropout(0.5),
+            torch.nn.Linear(512, num_classes)
+        )
         # Load your trained weights
         resnet_model_path = os.path.join(MODELS_DIR, "resnet50_9897.pth")
         state = torch.load(resnet_model_path, map_location="cpu")
