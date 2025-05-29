@@ -30,6 +30,8 @@ To start the FastAPI service, navigate to the root directory and run the `main.p
 uvicorn src.main:app
 ```
 
+The API will run on your local host: http://127.0.0.1:8000.
+
 If it takes a while to load try refreshing. Once the API is up and running, go to '/docs' by typing it in the search bar.
 
 ## Using the API
