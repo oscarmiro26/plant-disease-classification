@@ -4,7 +4,31 @@ import numpy as np
 
 # Data paths
 PROJECT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
-RAW_DATA_DIR = os.path.join(PROJECT_ROOT, 'data', 'raw', 'color')
+
+# Define potential data directories (for development and production in API server)
+DEV_DATA_PATH = os.path.join(PROJECT_ROOT, 'data', 'raw', 'color')
+PROD_DATA_PATH = os.path.join(PROJECT_ROOT, 'samples')
+
+try:
+    # Attempt to list the contents of the dev directory.
+    # This will raise FileNotFoundError if DEV_DATA_PATH doesn't exist or isn't a directory.
+    if not os.path.isdir(DEV_DATA_PATH):
+        raise FileNotFoundError # Explicitly raise if it's not a directory
+    os.listdir(DEV_DATA_PATH) # Access the path to trigger error if it doesn't exist
+    RAW_DATA_DIR = DEV_DATA_PATH
+    print(f"Using development data directory: {RAW_DATA_DIR}")
+except FileNotFoundError:
+    # Fallback to production/samples directory
+    RAW_DATA_DIR = PROD_DATA_PATH
+    print(f"Development data directory '{DEV_DATA_PATH}' not found or not accessible. Using production/fallback data directory: {RAW_DATA_DIR}")
+    # Optionally, add a check here if PROD_DATA_PATH must also exist and be a directory
+    if not os.path.isdir(RAW_DATA_DIR):
+        # This is a more critical error if neither path is valid.
+        # The script will likely fail later at os.listdir() for ALL_CLASSES anyway.
+        print(f"WARNING: Fallback data directory {RAW_DATA_DIR} also not found or not a directory.")
+        # You might want to raise an error here if this is an unrecoverable state:
+        # raise FileNotFoundError(f"Neither development path '{DEV_DATA_PATH}' nor fallback path '{PROD_DATA_PATH}' are valid directories.")
+
 OUTPUT_DIR = os.path.join(PROJECT_ROOT, 'outputs')
 LOG_DIR = os.path.join(PROJECT_ROOT, 'logs')
 PLOTS_DIR = os.path.join(OUTPUT_DIR, 'plots')

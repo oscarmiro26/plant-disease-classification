@@ -10,6 +10,8 @@ This service provides an API endpoint for classifying plant diseases from images
     # cd <repository-folder>
     ```
 
+    NOTE: If the image folders in `/samples` are empty, try deleting and cloning the repo again, or just download them manually from the remote repo. 
+
 2.  **Create a virtual environment:**
     ```bash
     python -m venv venv
