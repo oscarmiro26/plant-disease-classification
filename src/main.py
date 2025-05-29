@@ -10,7 +10,7 @@ from pydantic import BaseModel, validator, Field
 from PIL import Image
 import numpy as np
 from .data.svm_preprocessing import segment_leaf, extract_features
-from .training import config
+from .training.config import INV_LABEL_MAP, MODELS_DIR
 import torch
 from torchvision import models
 import torchvision.transforms as T
@@ -58,7 +58,8 @@ resnet_model = None
 # Create a FastAPI app instance
 app = FastAPI(
     title="Plant Disease Classification API",
-    description="API for classifying plant diseases from leaf images using a selection of our models (SVM, ResNet50).", ### Add new models in the desc.
+    description="API for classifying plant diseases from leaf images using a selection of our models (SVM, ResNet50).",
+    author="Ravindra, Oscar, Benediktus, Richard",
     version="1.0.0",
 )
 
@@ -84,9 +85,10 @@ async def load_model():
     global resnet_model
     # global ___ 
     try:
-        svm_model = joblib.load(os.path.join(config.MODELS_DIR, "svm.pkl"))
+        svm_path = os.path.join(MODELS_DIR, "svm.pkl")
+        svm_model = joblib.load(svm_path)
     except FileNotFoundError:
-        print("Error: Model file 'src/models/svm.pkl' not found.")
+        print(f"Error: Model file {MODELS_DIR} not found.")
     except Exception as e:
         print(f"Error loading SVM model: {e}")
         # Handle other potential errors during model loading
@@ -94,25 +96,25 @@ async def load_model():
     try:
         # Instantiate a ResNet50, adjust final layer for the number of classes
         base = models.resnet50(pretrained=False)
-        num_classes = len(config.INV_LABEL_MAP)
+        num_classes = len(INV_LABEL_MAP)
         base.fc = torch.nn.Linear(base.fc.in_features, num_classes)
         # Load your trained weights
-        state = torch.load(os.path.join(config.MODELS_DIR, "resnet50_9897.pth"), map_location="cpu")
+        resnet_model_path = os.path.join(MODELS_DIR, "resnet50_9897.pth")
+        state = torch.load(resnet_model_path, map_location="cpu")
         base.load_state_dict(state)
         base.eval()
         resnet_model = base
     except FileNotFoundError:
-        print("Error: Model file 'src/models/resnet50_9897.pth' not found.")
+        print(f"Error: Model file {resnet_model_path} not found.")
     except Exception as e:
         print(f"Error loading ResNet model: {e}")
-    ## Add other models here
 
 @app.post(
     "/predict/",
     response_model=PredictionResponse,
     tags=["Classification"],
     summary="Predict Plant Disease",
-    description="Upload an image of a plant leaf (JPEG or PNG) and specify the model type ('svm' / 'resnet' / ___ ) to classify its disease. The API will return the model used and the predicted disease class." # !!! Add your new model in the description !!! #
+    description="Upload an image of a plant leaf (JPEG or PNG) and specify the model type ('svm' / 'resnet') to classify its disease. The API will return the model used and the predicted disease class."
 )
 async def predict(input_data: ModelInput = Depends()):
     """
@@ -123,7 +125,6 @@ async def predict(input_data: ModelInput = Depends()):
         raise HTTPException(status_code=500, detail="SVM model not loaded. Check server logs.")
     if resnet_model is None and input_data.model_type == "resnet":
         raise HTTPException(status_code=500, detail="ResNet model not loaded. Check server logs.")
-    ## Add other models here
 
     # model_type and file are accessed via input_data.
     # Pydantic validators in ModelInput have already checked model_type and file.content_type.
@@ -147,10 +148,8 @@ async def predict(input_data: ModelInput = Depends()):
         # Convert PIL image to NumPy array (RGB)
         img_np = np.array(img.convert("RGB"))
         
-        ### This depends on the model; if using SVM, we need to segment the leaf first.
-        ### If other models work fine with segmentation, then remove the if statement.
+        # Segment the leaf if using SVM
         if input_data.model_type == "svm":
-            # Segment leaf (if using an SVM, but decide if the ResNet model needs this)
             segmented_img = segment_leaf(img_np)
 
     except HTTPException: # Re-raise HTTPExceptions explicitly
@@ -166,11 +165,12 @@ async def predict(input_data: ModelInput = Depends()):
         if input_data.model_type == "svm":
             features = extract_features(segmented_img)
             pred = svm_model.predict([features])[0]
-            class_label = config.INV_LABEL_MAP.get(pred, "Unknown class")
+            class_label = INV_LABEL_MAP.get(pred, "Unknown class")
 
         if input_data.model_type == "resnet":  # resnet
             # Prepare pytorch input
             preprocess = T.Compose([
+                T.ToPILImage(),
                 T.Resize(256),
                 T.CenterCrop(224),
                 T.ToTensor(),
@@ -181,7 +181,7 @@ async def predict(input_data: ModelInput = Depends()):
             with torch.no_grad():
                 outputs = resnet_model(tensor)
                 _, idx = outputs.max(1)
-            class_label = config.INV_LABEL_MAP.get(idx.item(), "Unknown class")
+            class_label = INV_LABEL_MAP.get(idx.item(), "Unknown class")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during prediction: {e}")
 
