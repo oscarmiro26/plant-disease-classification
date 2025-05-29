@@ -1,6 +1,6 @@
 # Plant Disease Classification FastAPI Service
 
-This service provides an API endpoint for classifying plant diseases from images using a selection of our ML models (incl. SVM, ResNet50, ResNet Ensemble).
+This service provides an API endpoint for classifying plant diseases from images using a selection of our ML models (incl. SVM and ResNet50).
 
 ## Setup
 
@@ -9,6 +9,8 @@ This service provides an API endpoint for classifying plant diseases from images
     # git clone <repository-url>
     # cd <repository-folder>
     ```
+
+    NOTE: If the image folders in `/samples` are empty, try deleting and cloning the repo again, or just download them manually from the remote repo. 
 
 2.  **Create a virtual environment:**
     ```bash
