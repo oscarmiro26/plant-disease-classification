@@ -25,7 +25,7 @@ class ModelInput(BaseModel):
     Uses Annotated to specify that fields come from Form and File.
     Includes validators for model_type and file content_type.
     """
-    model_type: Annotated[str, Form(description="Model to use; only svm supported", example="svm")]
+    model_type: Annotated[str, Form(description="Models to use.", example="svm")]
     file: Annotated[UploadFile, File(description="Image file to classify (JPEG or PNG)")]
 
     @validator('model_type')
@@ -91,7 +91,7 @@ async def load_model():
         # Handle other potential errors during model loading
     
     try:
-        # Instantiate a ResNet50, adjust final layer for your number of classes
+        # Instantiate a ResNet50, adjust final layer for the number of classes
         base = models.resnet50(pretrained=False)
         num_classes = len(INV_LABEL_MAP)
         base.fc = torch.nn.Linear(base.fc.in_features, num_classes)
@@ -119,9 +119,9 @@ async def predict(input_data: ModelInput = Depends()):
     Input validation (model_type, file type) is handled by the Pydantic ModelInput.
     """
     if svm_model is None and input_data.model_type == "svm":
-        raise HTTPException(status_code=503, detail="SVM model not loaded. Check server logs.")
+        raise HTTPException(status_code=500, detail="SVM model not loaded. Check server logs.")
     if resnet_model is None and input_data.model_type == "resnet":
-        raise HTTPException(status_code=503, detail="ResNet model not loaded. Check server logs.")
+        raise HTTPException(status_code=500, detail="ResNet model not loaded. Check server logs.")
     ## Add other models here
 
     # model_type and file are accessed via input_data.
@@ -155,7 +155,7 @@ async def predict(input_data: ModelInput = Depends()):
     except HTTPException: # Re-raise HTTPExceptions explicitly
         raise
     except ValueError as ve: # Catch ValueErrors from Pydantic validators if not caught by FastAPI
-        raise HTTPException(status_code=422, detail=str(ve))
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         # If there's an error opening or processing the image, return an error response
         raise HTTPException(status_code=400, detail=f"Could not process image file: {e}")
