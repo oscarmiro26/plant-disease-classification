@@ -342,12 +342,12 @@ async def load_model():
     tags=["Classification"],
     summary="Predict Plant Disease",
     description=(
-        "This tool uses Machine Learning models to classify plant diseases from leaf images.\n"
-        "It provides two different models: SVM and ResNet50.\n"
-        "To choose a model, use the `model_type` form field, and input `svm` or `resnet`.\n"
-        "Then it allows you to upload an image.\n"
-        "To upload an image, use the `file` form field, and input a JPEG or PNG image file.\n"
-        "The API will return a prediction with the label, which consists of the plant AND the disease."
+        "This tool uses Machine Learning models to classify plant diseases from leaf images.\n\n"
+        "It provides two different models: SVM and ResNet50.\n\n"
+        "To choose a model, use the `model_type` form field, and input `svm` or `resnet`.\n\n"
+        "Then it allows you to upload an image.\n\n"
+        "To upload an image, use the `file` form field, and input a JPEG or PNG image file.\n\n"
+        "The API will return a prediction with the label, which consists of the plant AND the disease.\n\n"
         "The label is in the format of 'Plant___Disease', to allow for easy parsing."
     ),
     responses={
