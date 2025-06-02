@@ -1,18 +1,11 @@
 from typing import Callable, Tuple
 import numpy as np
 import cv2
-from skimage import color, measure, util
-from skimage.filters import gabor, threshold_otsu # Added gaussian
-from skimage.feature import (
-    hog, 
-    local_binary_pattern, 
-    graycomatrix, 
-    graycoprops,
-)
+from skimage import color, util
+from skimage.filters import gabor, threshold_otsu
 from joblib import Parallel, delayed
 
-from .datasets import PlantDiseaseDataset # Assuming PlantDiseaseDataset is in datasets.py in the same directory
-
+from .datasets import PlantDiseaseDataset
 
 def segment_leaf(image: np.ndarray) -> np.ndarray:
     """
@@ -125,26 +118,16 @@ def load_and_prepare_data(
         if img.ndim == 3:
             # H×W×C
             img = np.transpose(img, (1, 2, 0))
-        # Ensure img is a NumPy array before calling .numpy()
-        # If it's already a NumPy array, this won't do anything.
-        # If it's a Tensor, it will convert it.
-        # However, the type hint says np.ndarray, so it should already be one.
-        # The original code had img.numpy().astype(np.float32)
-        # This implies img was a tensor at that point.
-        # Let's assume the input `img` to feature_extraction_fn is always np.ndarray
-        # as per its type hint. The conversion from tensor should happen before calling this.
-        # The _process function receives `img` from the dataset, which might be a Tensor.
         
-        # If PlantDiseaseDataset returns tensors:
         if hasattr(img, 'numpy'):
             arr = img.numpy().astype(np.float32)
-        else: # Assuming it's already a numpy array if not a tensor
+        else:
             arr = img.astype(np.float32)
 
         feats = feature_extraction_fn(arr)
         return feats, lbl
     
-    # map over all samples in parallel
+    # Map over all samples in parallel
     results = Parallel(n_jobs=n_jobs, backend="loky", verbose=1)(
         delayed(_process)(sample) for sample in dataset
     )
