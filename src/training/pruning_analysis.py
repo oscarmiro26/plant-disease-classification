@@ -1,16 +1,11 @@
 import os
 import torch
-import torch_pruning as tp
-from torch.utils.data import DataLoader
-import optuna
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from torchvision.models import resnet50
 
 from .config import MODELS_DIR, PLOTS_DIR, DEVICE, INV_LABEL_MAP
-from ..data.datasets import PlantDiseaseDataset
-from ..data.splitting import create_splits
 
 
 def analyze_filter_norms(model):

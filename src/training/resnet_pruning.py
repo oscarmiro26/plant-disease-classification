@@ -2,7 +2,7 @@ import os
 import torch
 import torch.nn as nn
 import torch_pruning as tp
-from torch_pruning.importance import MagnitudeImportance
+from torch_pruning.pruner.importance import MagnitudeImportance
 import optuna
 import pandas as pd
 import numpy as np
@@ -85,14 +85,14 @@ def load_model():
     base.load_state_dict(state)
     model = base.eval()
     model.to(config.DEVICE)
-    logger.info(f"Model loaded fro  m {resnet_model_path}")
+    logger.info(f"Model loaded from {resnet_model_path}")
     return model
 
 def split_data():
     # Create train/validation/test splits
     logger.info("Splitting data...")
     train_df, val_df, test_df = create_splits(
-        data_dir=config.DATA_DIR,
+        data_dir=config.RAW_DATA_DIR,
         label_map=config.LABEL_MAP,
         test_size=config.TEST_SPLIT_SIZE,
         val_size=config.VALIDATION_SPLIT_SIZE,
@@ -100,7 +100,7 @@ def split_data():
     )
     return train_df, val_df, test_df
 
-def samples_per_class():
+def get_samples_per_class():
     """Calculate number of samples per class in the training set."""
     train_df, _, _ = split_data()
     return [train_df['label'].tolist().count(label) for label in config.LABEL_MAP.keys()]
@@ -231,7 +231,7 @@ def objective(trial):
     optimizer = torch.optim.AdamW([
         {'params': model.fc.parameters(), 'lr': LR_CLASSIFIER},
     ], weight_decay=1e-4)
-    samples_per_class = samples_per_class()
+    samples_per_class = get_samples_per_class()
     criterion = Loss(
         loss_type="focal_loss",
         samples_per_class=samples_per_class,
@@ -379,7 +379,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.AdamW([
         {'params': best_model.fc.parameters(), 'lr': LR_CLASSIFIER},
     ], weight_decay=1e-4)
-    samples_per_class = samples_per_class()
+    samples_per_class = get_samples_per_class()
     criterion = Loss(
         loss_type="focal_loss",
         samples_per_class=samples_per_class,
