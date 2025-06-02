@@ -27,12 +27,9 @@ from ..utils.logger import setup_logger
 # Pruning Hyperparameters
 TRIAL_EPOCHS = 10
 PRUNING_EPOCHS = 50
-BASE_LR = 0.001
-LR_DECAY = 0.1
-LR_DECAY_EPOCHS = [3, 6, 9]
 N_TRIALS = 20
 RANDOM_SEED = 42
-NUM_WORKERS = 16 
+NUM_WORKERS = 4
 # Filter Norm Pruning Range
 FILTER_NORM_RANGE = [0.10, 0.30, 0.05]  # min, max, step
 # FPGM Pruning Range 
@@ -41,7 +38,7 @@ FPGM_RANGE = []
 ## Fine-Tuning Hyperparameters
 BATCH_SIZE        = 64
 NUM_EPOCHS        = 50
-NUM_WORKERS       = 16
+NUM_WORKERS       = 4
 # Learning rates
 LR_CLASSIFIER     = 1e-3
 LR_LAYER4         = 1e-4
@@ -81,7 +78,7 @@ def load_model():
         nn.Linear(512, num_classes)
     )
     resnet_model_path = os.path.join(config.MODELS_DIR, "resnet50_9897.pth")
-    state = torch.load(resnet_model_path, map_location="cpu")
+    state = torch.load(resnet_model_path, map_location="cpu", weights_only=True)
     base.load_state_dict(state)
     model = base.eval()
     model.to(config.DEVICE)
@@ -239,17 +236,13 @@ def objective(trial):
     )
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
 
-    # Pre-pruning validation loss
-    logger.info("Computing pre-pruning validation loss...")
-    original_val_loss = validate(model, val_loader, criterion)
-
     # Calculate pre-pruning metrics
     example_inputs = torch.randn(1, 3, 224, 224).to(config.DEVICE)
     params_before = sum(p.numel() for p in model.parameters())
     flops_before = tp.utils.count_ops_and_params(model, example_inputs)[0]
     
     # Pruning hyperparameters
-    prune_ratio = trial.suggest_float('prune_ratio', FILTER_NORM_RANGE[0], FILTER_NORM_RANGE[1], step=FILTER_NORM_RANGE[2])
+    pruning_ratio = trial.suggest_float('pruning_ratio', FILTER_NORM_RANGE[0], FILTER_NORM_RANGE[1], step=FILTER_NORM_RANGE[2])
     norm_degree = trial.suggest_categorical('norm_degree', [1, 2])
         
     # Pruning
@@ -258,7 +251,7 @@ def objective(trial):
         example_inputs,
         importance=MagnitudeImportance(p=norm_degree),
         global_pruning=True,
-        prune_ratio=prune_ratio,
+        pruning_ratio=pruning_ratio,
         ignored_layers=[model.fc]  # Don't prune final classifier
     )
     pruner.step()
@@ -276,18 +269,11 @@ def objective(trial):
     train_losses, val_losses = [], []
 
     # Train and validate for TRIAL_EPOCHS
-    logger.info(f"Starting training for {TRIAL_EPOCHS} epochs with pruning ratio {prune_ratio:.2f} and L{norm_degree} norm.")
+    logger.info(f"Starting training for {TRIAL_EPOCHS} epochs with pruning ratio {pruning_ratio:.2f} and L{norm_degree} norm.")
     for epoch in range(TRIAL_EPOCHS):
-        # Gradual unfreezing (only for L4 since L3 happens at the end)
-        if epoch == UNFREEZE_L4_AT:
-            for param in model.layer4.parameters():
-                param.requires_grad = True
-            optimizer.add_param_group({'params': model.layer4.parameters(), 'lr': LR_LAYER4})
-            logger.info(f"Unfroze layer4 at epoch {epoch} with lr={LR_LAYER4}.")
-
         # Train and validate
         epoch_train_loss = train(model, train_loader, optimizer, criterion)
-        epoch_val_loss = validate(model, val_loader)
+        epoch_val_loss = validate(model, val_loader, criterion)
         # Log losses
         train_losses.append(epoch_train_loss)
         val_losses.append(epoch_val_loss)
@@ -315,7 +301,6 @@ def objective(trial):
     flops_reduction = (flops_before - flops_after) / flops_before
     
     # Store important metrics
-    trial.set_user_attr('original_val_loss', original_val_loss)
     trial.set_user_attr('best_val_loss', best_val_loss)
     trial.set_user_attr('compression_ratio', compression_ratio)
     trial.set_user_attr('flops_reduction', flops_reduction)
@@ -362,7 +347,6 @@ if __name__ == "__main__":
         print(f"  {key}: {value}")
     
     print(f"\nMetrics:")
-    print(f"  Original Validation Loss: {trial.user_attrs['original_val_loss']:.4f}")
     print(f"  Best Validation Loss: {trial.user_attrs['best_val_loss']:.4f}")
     print(f"  Compression Ratio: {trial.user_attrs['compression_ratio']:.1%}")
     print(f"  FLOPs Reduction: {trial.user_attrs['flops_reduction']:.1%}")
@@ -389,7 +373,7 @@ if __name__ == "__main__":
     example_inputs = torch.randn(1, 3, 224, 224).to(config.DEVICE)
     
     # Apply best pruning configuration
-    best_prune_ratio = trial.params['prune_ratio']
+    best_pruning_ratio = trial.params['pruning_ratio']
     best_norm_degree = trial.params['norm_degree']
     
     if best_norm_degree == 1:
@@ -402,14 +386,14 @@ if __name__ == "__main__":
         example_inputs=example_inputs,
         importance=importance,
         global_pruning=True,
-        prune_ratio=best_prune_ratio,
+        pruning_ratio=best_pruning_ratio,
         ignored_layers=[best_model.fc]
     )
     pruner.step()
 
     # ==================== Fine-Tune and Save ==================== >    
 
-    logger.info(f"Applying best pruning ratio {best_prune_ratio:.2f} and L{best_norm_degree}.")
+    logger.info(f"Applying best pruning ratio {best_pruning_ratio:.2f} and L{best_norm_degree}.")
     for _, param in best_model.named_parameters():
         param.requires_grad = False
     for param in best_model.fc.parameters():
@@ -422,7 +406,7 @@ if __name__ == "__main__":
     checkpoint_path = os.path.join(config.MODELS_DIR, f'pruned_resnet50_initial.pth')
 
     # Train and validate for PRUNING_EPOCHS
-    logger.info(f"Starting post-pruning fine-tuning for {PRUNING_EPOCHS} epochs with pruning ratio {best_prune_ratio:.2f} and L{best_norm_degree} norm.")
+    logger.info(f"Starting post-pruning fine-tuning for {PRUNING_EPOCHS} epochs with pruning ratio {best_pruning_ratio:.2f} and L{best_norm_degree} norm.")
     for epoch in range(PRUNING_EPOCHS):
         # Gradual unfreezing
         if epoch == UNFREEZE_L4_AT:
