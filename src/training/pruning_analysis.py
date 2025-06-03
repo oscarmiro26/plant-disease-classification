@@ -110,10 +110,49 @@ def visualize_fpgm_data(fpgm_data):
     plt.savefig(file_path)
     print(f"FPGM analysis visualization saved to {file_path}")
 
+def visualize_norm_histogram(model, bins=30):
+    """
+    Plot histograms of filter L1‐norms for only the first, middle, and last Conv2d layers.
+    x‐axis: L1‐norm value
+    y‐axis: number of filters
+    """
+    # collect per‐filter L1 norms
+    norms = {}
+    for name, module in model.named_modules():
+        if isinstance(module, torch.nn.Conv2d):
+            w = module.weight.data
+            norms[name] = (w.view(w.size(0), -1)
+                             .abs().sum(dim=1)
+                             .cpu().numpy())
+
+    layers = list(norms.keys())
+    if not layers:
+        print("No Conv2d layers found.")
+        return
+
+    # pick first, middle, last
+    idxs = [0, len(layers)//2, len(layers)-1]
+    selected_layers = [layers[i] for i in idxs]
+
+    # plot
+    plt.figure(figsize=(12, 4))
+    for i, layer in enumerate(selected_layers, 1):
+        ax = plt.subplot(1, 3, i)
+        ax.hist(norms[layer], bins=bins, color=f"C{i}", alpha=0.7)
+        ax.set_title(layer, fontsize="small")
+        ax.set_xlabel("L1 Norm")
+        ax.set_ylabel("Count")
+
+    plt.tight_layout()
+    # save & show
+    out = os.path.join(PLOTS_DIR, "filter_norm_histogram_subset.png")
+    plt.savefig(out)
+    print(f"Subset histogram saved to {out}")
+    plt.show()
 
 if __name__ == "__main__":
     # Load model
-    base = resnet50(pretrained=False)
+    base = resnet50(weights=None)
     num_classes = len(INV_LABEL_MAP)
     num_ftrs = base.fc.in_features
     base.fc = torch.nn.Sequential(
@@ -123,7 +162,7 @@ if __name__ == "__main__":
         torch.nn.Linear(512, num_classes)
     )
     resnet_model_path = os.path.join(MODELS_DIR, "resnet50_9897.pth")
-    state = torch.load(resnet_model_path, map_location="cpu")
+    state = torch.load(resnet_model_path, map_location="cpu", weights_only=True)
     base.load_state_dict(state)
     model = base.eval()
     model.to(DEVICE)
@@ -138,3 +177,7 @@ if __name__ == "__main__":
     fpgm_data = fpgm_distance_analysis(model)
     visualize_fpgm_data(fpgm_data)
     print("Analysis complete.")
+    # Visualize norm histogram
+    print("Visualizing norm histogram for selected layers...")
+    visualize_norm_histogram(model)
+    print("Norm histogram visualization complete.")

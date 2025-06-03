@@ -25,24 +25,23 @@ from ..utils.logger import setup_logger
 
 
 # Pruning Hyperparameters
-TRIAL_EPOCHS = 10
+TRIAL_EPOCHS = 1
 PRUNING_EPOCHS = 50
 N_TRIALS = 20
 RANDOM_SEED = 42
 NUM_WORKERS = 4
 # Filter Norm Pruning Range
 FILTER_NORM_RANGE = [0.10, 0.30, 0.05]  # min, max, step
+NORM_CATEGORY = [1, 2]
 # FPGM Pruning Range 
 FPGM_RANGE = []
 
 ## Fine-Tuning Hyperparameters
 BATCH_SIZE        = 64
-NUM_EPOCHS        = 50
-NUM_WORKERS       = 4
-# Learning rates
-LR_CLASSIFIER     = 1e-3
-LR_LAYER4         = 1e-4
-LR_LAYER3         = 1e-5
+# Learning rates (1/10 of original)
+LR_CLASSIFIER     = 1e-4
+LR_LAYER4         = 1e-5
+LR_LAYER3         = 1e-6
 # Unfreeze schedule (epochs to unfreeze)
 UNFREEZE_L4_AT    = 5
 UNFREEZE_L3_AT    = 10
@@ -68,7 +67,7 @@ if torch.cuda.is_available():
 
 def load_model():
     # Load model
-    base = resnet50(pretrained=False)
+    base = resnet50(weights=None)
     num_classes = len(config.INV_LABEL_MAP)
     num_ftrs = base.fc.in_features
     base.fc = nn.Sequential(
@@ -243,7 +242,7 @@ def objective(trial):
     
     # Pruning hyperparameters
     pruning_ratio = trial.suggest_float('pruning_ratio', FILTER_NORM_RANGE[0], FILTER_NORM_RANGE[1], step=FILTER_NORM_RANGE[2])
-    norm_degree = trial.suggest_categorical('norm_degree', [1, 2])
+    norm_degree = trial.suggest_categorical('norm_degree', NORM_CATEGORY)
         
     # Pruning
     pruner = tp.pruner.MagnitudePruner(
@@ -353,6 +352,11 @@ if __name__ == "__main__":
     
     # ==================== Save Best Model ==================== >
     
+    logger.info(f"Best trial: {trial.number}")
+    logger.info(f"Best val loss: {trial.value:.4f}")
+    logger.info(f"Compression ratio: {trial.user_attrs['compression_ratio']:.1%}")
+    logger.info(f"FLOPs Reduction: {trial.user_attrs['flops_reduction']:.1%}")
+    
     print("\n" + "="*50)
     print("CREATING AND SAVING BEST MODEL")
     print("="*50)
@@ -422,7 +426,7 @@ if __name__ == "__main__":
 
         # Train and validate
         epoch_train_loss = train(best_model, train_loader, optimizer, criterion)
-        epoch_val_loss = validate(best_model, val_loader)
+        epoch_val_loss = validate(best_model, val_loader, criterion)
         # Log losses
         train_losses.append(epoch_train_loss)
         val_losses.append(epoch_val_loss)

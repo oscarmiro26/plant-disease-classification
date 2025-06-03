@@ -1,0 +1,220 @@
+2025-06-03 19:23:55,997 [INFO] Created logger with run_dir: /scratch/s5142822/plant-disease-classification/src/training/../../logs/resnet50_pruning/resnet50_pruning_10
+2025-06-03 19:23:56,005 [INFO] Starting trial 0
+2025-06-03 19:23:56,635 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:23:56,636 [INFO] Splitting data...
+2025-06-03 19:23:57,939 [INFO] Splitting data...
+2025-06-03 19:23:59,602 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:24:47,373 [INFO] Epoch 00 | Train: 0.9253 | Val: 0.2846
+2025-06-03 19:24:47,463 [INFO] Starting trial 1
+2025-06-03 19:24:47,904 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:24:47,904 [INFO] Splitting data...
+2025-06-03 19:24:48,872 [INFO] Splitting data...
+2025-06-03 19:24:50,100 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:25:36,143 [INFO] Epoch 00 | Train: 0.9096 | Val: 0.2749
+2025-06-03 19:25:36,196 [INFO] Starting trial 2
+2025-06-03 19:25:36,623 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:25:36,624 [INFO] Splitting data...
+2025-06-03 19:25:37,606 [INFO] Splitting data...
+2025-06-03 19:25:38,830 [INFO] Starting training for 1 epochs with pruning ratio 0.15 and L1 norm.
+2025-06-03 19:26:23,265 [INFO] Epoch 00 | Train: 1.1587 | Val: 0.4029
+2025-06-03 19:26:23,348 [INFO] Starting trial 3
+2025-06-03 19:26:23,770 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:26:23,771 [INFO] Splitting data...
+2025-06-03 19:26:24,753 [INFO] Splitting data...
+2025-06-03 19:26:25,968 [INFO] Starting training for 1 epochs with pruning ratio 0.15 and L1 norm.
+2025-06-03 19:27:10,285 [INFO] Epoch 00 | Train: 1.1670 | Val: 0.4011
+2025-06-03 19:27:10,337 [INFO] Starting trial 4
+2025-06-03 19:27:10,755 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:27:10,756 [INFO] Splitting data...
+2025-06-03 19:27:11,705 [INFO] Splitting data...
+2025-06-03 19:27:12,908 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:27:58,954 [INFO] Epoch 00 | Train: 0.9083 | Val: 0.2773
+2025-06-03 19:27:59,007 [INFO] Starting trial 5
+2025-06-03 19:27:59,435 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:27:59,436 [INFO] Splitting data...
+2025-06-03 19:28:00,403 [INFO] Splitting data...
+2025-06-03 19:28:01,618 [INFO] Starting training for 1 epochs with pruning ratio 0.15 and L1 norm.
+2025-06-03 19:28:46,223 [INFO] Epoch 00 | Train: 1.1670 | Val: 0.4079
+2025-06-03 19:28:46,276 [INFO] Starting trial 6
+2025-06-03 19:28:46,702 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:28:46,703 [INFO] Splitting data...
+2025-06-03 19:28:47,660 [INFO] Splitting data...
+2025-06-03 19:28:49,074 [INFO] Starting training for 1 epochs with pruning ratio 0.15 and L1 norm.
+2025-06-03 19:29:33,955 [INFO] Epoch 00 | Train: 1.1672 | Val: 0.3999
+2025-06-03 19:29:34,009 [INFO] Starting trial 7
+2025-06-03 19:29:34,441 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:29:34,442 [INFO] Splitting data...
+2025-06-03 19:29:35,426 [INFO] Splitting data...
+2025-06-03 19:29:36,646 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:30:22,783 [INFO] Epoch 00 | Train: 0.9129 | Val: 0.2696
+2025-06-03 19:30:22,835 [INFO] Starting trial 8
+2025-06-03 19:30:23,272 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:30:23,276 [INFO] Splitting data...
+2025-06-03 19:30:24,254 [INFO] Splitting data...
+2025-06-03 19:30:25,477 [INFO] Starting training for 1 epochs with pruning ratio 0.15 and L1 norm.
+2025-06-03 19:31:10,202 [INFO] Epoch 00 | Train: 1.1703 | Val: 0.3996
+2025-06-03 19:31:10,255 [INFO] Starting trial 9
+2025-06-03 19:31:10,693 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:31:10,693 [INFO] Splitting data...
+2025-06-03 19:31:11,681 [INFO] Splitting data...
+2025-06-03 19:31:12,897 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:31:59,093 [INFO] Epoch 00 | Train: 0.9118 | Val: 0.2750
+2025-06-03 19:31:59,145 [INFO] Starting trial 10
+2025-06-03 19:31:59,578 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:31:59,582 [INFO] Splitting data...
+2025-06-03 19:32:00,577 [INFO] Splitting data...
+2025-06-03 19:32:01,795 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:32:47,968 [INFO] Epoch 00 | Train: 0.9087 | Val: 0.2774
+2025-06-03 19:32:48,019 [INFO] Starting trial 11
+2025-06-03 19:32:48,452 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:32:48,456 [INFO] Splitting data...
+2025-06-03 19:32:49,436 [INFO] Splitting data...
+2025-06-03 19:32:50,682 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:33:36,791 [INFO] Epoch 00 | Train: 0.9188 | Val: 0.2751
+2025-06-03 19:33:36,843 [INFO] Starting trial 12
+2025-06-03 19:33:37,278 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:33:37,279 [INFO] Splitting data...
+2025-06-03 19:33:38,284 [INFO] Splitting data...
+2025-06-03 19:33:39,689 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:34:26,021 [INFO] Epoch 00 | Train: 0.9209 | Val: 0.2779
+2025-06-03 19:34:26,075 [INFO] Starting trial 13
+2025-06-03 19:34:26,510 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:34:26,510 [INFO] Splitting data...
+2025-06-03 19:34:27,519 [INFO] Splitting data...
+2025-06-03 19:34:28,752 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:35:14,813 [INFO] Epoch 00 | Train: 0.9173 | Val: 0.2733
+2025-06-03 19:35:14,866 [INFO] Starting trial 14
+2025-06-03 19:35:15,303 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:35:15,307 [INFO] Splitting data...
+2025-06-03 19:35:16,299 [INFO] Splitting data...
+2025-06-03 19:35:17,547 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:36:03,720 [INFO] Epoch 00 | Train: 0.9148 | Val: 0.2776
+2025-06-03 19:36:03,773 [INFO] Starting trial 15
+2025-06-03 19:36:04,209 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:36:04,209 [INFO] Splitting data...
+2025-06-03 19:36:05,210 [INFO] Splitting data...
+2025-06-03 19:36:06,446 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:36:52,588 [INFO] Epoch 00 | Train: 0.9234 | Val: 0.2772
+2025-06-03 19:36:52,640 [INFO] Starting trial 16
+2025-06-03 19:36:53,084 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:36:53,085 [INFO] Splitting data...
+2025-06-03 19:36:54,103 [INFO] Splitting data...
+2025-06-03 19:36:55,371 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:37:41,435 [INFO] Epoch 00 | Train: 0.9088 | Val: 0.2760
+2025-06-03 19:37:41,486 [INFO] Starting trial 17
+2025-06-03 19:37:41,921 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:37:41,921 [INFO] Splitting data...
+2025-06-03 19:37:42,919 [INFO] Splitting data...
+2025-06-03 19:37:44,146 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:38:30,251 [INFO] Epoch 00 | Train: 0.9262 | Val: 0.2732
+2025-06-03 19:38:30,303 [INFO] Starting trial 18
+2025-06-03 19:38:30,735 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:38:30,739 [INFO] Splitting data...
+2025-06-03 19:38:31,725 [INFO] Splitting data...
+2025-06-03 19:38:32,952 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:39:18,980 [INFO] Epoch 00 | Train: 0.9297 | Val: 0.2764
+2025-06-03 19:39:19,035 [INFO] Starting trial 19
+2025-06-03 19:39:19,641 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:39:19,645 [INFO] Splitting data...
+2025-06-03 19:39:20,625 [INFO] Splitting data...
+2025-06-03 19:39:21,846 [INFO] Starting training for 1 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:40:08,276 [INFO] Epoch 00 | Train: 0.9139 | Val: 0.2729
+2025-06-03 19:40:08,330 [INFO] Best trial: 7
+2025-06-03 19:40:08,330 [INFO] Best val loss: 0.2696
+2025-06-03 19:40:08,330 [INFO] Compression ratio: 117.7%
+2025-06-03 19:40:08,330 [INFO] FLOPs Reduction: 25.3%
+2025-06-03 19:40:08,769 [INFO] Model loaded from /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/resnet50_9897.pth
+2025-06-03 19:40:08,773 [INFO] Splitting data...
+2025-06-03 19:40:09,782 [INFO] Splitting data...
+2025-06-03 19:40:11,008 [INFO] Applying best pruning ratio 0.10 and L1.
+2025-06-03 19:40:11,008 [INFO] Starting post-pruning fine-tuning for 50 epochs with pruning ratio 0.10 and L1 norm.
+2025-06-03 19:40:57,356 [INFO] Epoch 00 | Train: 0.9216 | Val: 0.2704
+2025-06-03 19:41:43,658 [INFO] Epoch 01 | Train: 0.4091 | Val: 0.2763
+2025-06-03 19:42:29,973 [INFO] Epoch 02 | Train: 0.3782 | Val: 0.2514
+2025-06-03 19:43:16,193 [INFO] Epoch 03 | Train: 0.3547 | Val: 0.2592
+2025-06-03 19:44:02,419 [INFO] Epoch 04 | Train: 0.3415 | Val: 0.2450
+2025-06-03 19:44:02,420 [INFO] Unfroze layer4 at epoch 5 with lr=1e-05.
+2025-06-03 19:44:57,184 [INFO] Epoch 05 | Train: 0.2458 | Val: 0.1383
+2025-06-03 19:45:51,763 [INFO] Epoch 06 | Train: 0.1772 | Val: 0.1239
+2025-06-03 19:46:46,294 [INFO] Epoch 07 | Train: 0.1616 | Val: 0.1184
+2025-06-03 19:47:40,977 [INFO] Epoch 08 | Train: 0.1599 | Val: 0.1158
+2025-06-03 19:48:35,590 [INFO] Epoch 09 | Train: 0.1537 | Val: 0.1161
+2025-06-03 19:48:35,591 [INFO] Unfroze layer3 at epoch 10 with lr=1e-06.
+2025-06-03 19:49:50,022 [INFO] Epoch 10 | Train: 0.1499 | Val: 0.1059
+2025-06-03 19:51:04,455 [INFO] Epoch 11 | Train: 0.1449 | Val: 0.0992
+2025-06-03 19:52:18,895 [INFO] Epoch 12 | Train: 0.1377 | Val: 0.0934
+2025-06-03 19:53:33,355 [INFO] Epoch 13 | Train: 0.1366 | Val: 0.0921
+2025-06-03 19:54:47,853 [INFO] Epoch 14 | Train: 0.1313 | Val: 0.0903
+2025-06-03 19:56:02,358 [INFO] Epoch 15 | Train: 0.1335 | Val: 0.0875
+2025-06-03 19:57:16,788 [INFO] Epoch 16 | Train: 0.1323 | Val: 0.0887
+2025-06-03 19:58:31,228 [INFO] Epoch 17 | Train: 0.1319 | Val: 0.0927
+2025-06-03 19:59:45,640 [INFO] Epoch 18 | Train: 0.1319 | Val: 0.0929
+2025-06-03 20:01:00,060 [INFO] Epoch 19 | Train: 0.1290 | Val: 0.0910
+2025-06-03 20:02:14,582 [INFO] Epoch 20 | Train: 0.1327 | Val: 0.0849
+2025-06-03 20:03:29,061 [INFO] Epoch 21 | Train: 0.1304 | Val: 0.0909
+2025-06-03 20:04:43,479 [INFO] Epoch 22 | Train: 0.1329 | Val: 0.0901
+2025-06-03 20:05:58,046 [INFO] Epoch 23 | Train: 0.1309 | Val: 0.0894
+2025-06-03 20:07:12,499 [INFO] Epoch 24 | Train: 0.1312 | Val: 0.0865
+2025-06-03 20:08:26,945 [INFO] Epoch 25 | Train: 0.1310 | Val: 0.0887
+2025-06-03 20:09:41,353 [INFO] Epoch 26 | Train: 0.1282 | Val: 0.0945
+2025-06-03 20:10:55,932 [INFO] Epoch 27 | Train: 0.1320 | Val: 0.0896
+2025-06-03 20:12:10,439 [INFO] Epoch 28 | Train: 0.1319 | Val: 0.0990
+2025-06-03 20:13:24,915 [INFO] Epoch 29 | Train: 0.1332 | Val: 0.0937
+2025-06-03 20:14:39,429 [INFO] Epoch 30 | Train: 0.1327 | Val: 0.0876
+2025-06-03 20:14:39,429 [INFO] Early stopping triggered at epoch 30 (no improvement for 10 epochs).
+2025-06-03 20:14:39,429 [INFO] Final validation loss after pruning and fine-tuning: 0.0849
+2025-06-03 20:15:47,947 [INFO] Confusion Matrix:
+[[ 93   0   0 ...   0   0   0]
+ [  0  93   0 ...   0   0   0]
+ [  0   0  41 ...   0   0   0]
+ ...
+ [  0   0   0 ... 779   0   0]
+ [  0   0   0 ...   1  55   0]
+ [  0   0   0 ...   0   0 238]]
+2025-06-03 20:15:47,948 [INFO] Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     0.7881    0.9894    0.8774        94
+                                 Apple___Black_rot     0.8611    1.0000    0.9254        93
+                          Apple___Cedar_apple_rust     1.0000    1.0000    1.0000        41
+                                   Apple___healthy     0.9861    0.8623    0.9201       247
+                               Blueberry___healthy     0.9954    0.9644    0.9797       225
+          Cherry_(including_sour)___Powdery_mildew     0.9874    0.9937    0.9905       158
+                 Cherry_(including_sour)___healthy     0.9920    0.9688    0.9802       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.6789    0.9610    0.7957        77
+                       Corn_(maize)___Common_rust_     1.0000    0.9721    0.9858       179
+               Corn_(maize)___Northern_Leaf_Blight     0.9492    0.7568    0.8421       148
+                            Corn_(maize)___healthy     0.9886    1.0000    0.9943       174
+                                 Grape___Black_rot     0.9157    0.9209    0.9183       177
+                      Grape___Esca_(Black_Measles)     0.9545    0.9130    0.9333       207
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     1.0000    0.9565    0.9778       161
+                                   Grape___healthy     0.9130    1.0000    0.9545        63
+          Orange___Haunglongbing_(Citrus_greening)     1.0000    0.9927    0.9964       826
+                            Peach___Bacterial_spot     0.9789    0.9420    0.9601       345
+                                   Peach___healthy     0.8060    1.0000    0.8926        54
+                     Pepper,_bell___Bacterial_spot     0.8683    0.9667    0.9148       150
+                            Pepper,_bell___healthy     0.9565    0.9910    0.9735       222
+                             Potato___Early_blight     0.9562    0.8733    0.9129       150
+                              Potato___Late_blight     0.9516    0.7867    0.8613       150
+                                  Potato___healthy     0.4490    0.9565    0.6111        23
+                               Raspberry___healthy     0.9322    0.9821    0.9565        56
+                                 Soybean___healthy     0.9474    0.9895    0.9680       764
+                           Squash___Powdery_mildew     0.9778    0.9600    0.9688       275
+                          Strawberry___Leaf_scorch     0.9932    0.8795    0.9329       166
+                              Strawberry___healthy     0.7083    1.0000    0.8293        68
+                           Tomato___Bacterial_spot     0.9360    0.9624    0.9490       319
+                             Tomato___Early_blight     0.7625    0.8133    0.7871       150
+                              Tomato___Late_blight     0.9615    0.7867    0.8654       286
+                                Tomato___Leaf_Mold     0.9020    0.9650    0.9324       143
+                       Tomato___Septoria_leaf_spot     0.9383    0.8571    0.8959       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.9704    0.5219    0.6788       251
+                              Tomato___Target_Spot     0.6502    0.8720    0.7449       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     0.9949    0.9689    0.9817       804
+                      Tomato___Tomato_mosaic_virus     0.8594    0.9821    0.9167        56
+                                  Tomato___healthy     0.7778    0.9958    0.8734       239
+
+                                          accuracy                         0.9295      8146
+                                         macro avg     0.9023    0.9291    0.9073      8146
+                                      weighted avg     0.9395    0.9295    0.9295      8146
+
+2025-06-03 20:15:48,130 [INFO] Final pruned model saved to /scratch/s5142822/plant-disease-classification/src/training/../../outputs/models/pruned_resnet50_final.pth
