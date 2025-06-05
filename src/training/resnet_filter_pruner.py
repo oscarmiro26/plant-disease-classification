@@ -163,7 +163,7 @@ def main(args):
     }
     # Sweep pruning ratios
     if args.experiment_mode:
-        logger.info("Running in experiment mode with predefined pruning ratios.")
+        logger.info(f"Running in experiment mode with predefined pruning ratios {FILTER_NORM_RANGE}.")
         ratios = FILTER_NORM_RANGE
     else:
         logger.info("Running in normal mode with a single pruning ratio.")
@@ -264,8 +264,8 @@ if __name__ == "__main__":
     # Experiment
     parser.add_argument('--experiment_mode', action='store_true',
                         help='Run in experiment mode. Configured in launch_experiment.sh')
-    parser.add_argument('--experiment_name', type=str, default='resnet50_fpgm_experiment',
-                        help='Name of the experiment (default: "resnet50_fpgm_experiment")')
+    parser.add_argument('--experiment_name', type=str, default='pruning_experiment',
+                        help='Name of the experiment (default: "pruning_experiment")')
 
     # Config
     parser.add_argument('--pruner', type=str, default='fpgm', choices=['fpgm', 'norm'], help='Pruner type (default: "fpgm")')
