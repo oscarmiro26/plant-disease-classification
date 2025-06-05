@@ -1,9 +1,11 @@
 import os
+import io
 import argparse
 import torch
+import torch_pruning as tp
+from torch.ao.pruning._experimental.pruner import FPGMPruner
 import numpy as np
 import pandas as pd
-from time import time
 
 from . import config
 from ..utils.logger import setup_logger
@@ -17,8 +19,6 @@ from ..utils.resnet_utils import (
     validate, 
     evaluate
 )
-import torch_pruning as tp
-from torch.ao.pruning._experimental.pruner import FPGMPruner
 
 
 # Pruning Hyperparameters
@@ -48,7 +48,7 @@ CRITERION = get_criterion()
 
 # Logging setup
 logger, RUN_DIR = setup_logger(
-    model_name="resnet50_pruning_filter_norm",
+    model_name="resnet50_pruning",
     base_log_dir=config.LOG_DIR
 )
 
@@ -105,6 +105,7 @@ def fine_tune_model(model, train_loader, val_loader, epochs):
 
     best_val_loss = float('inf')
     patience_counter = 0
+    # add tqdm here
     for epoch in range(epochs):
         train(model, train_loader, optim, criterion)
         val_loss = validate(model, val_loader, criterion)
@@ -123,17 +124,17 @@ def fine_tune_model(model, train_loader, val_loader, epochs):
 
 def main(args):
     logger.info("Starting ResNet50 Filter Norm Pruning and Fine-Tuning")
-    logger.info(f"Pruner type: {args.pruner}")
+    logger.info(f"Pruner type: {args.pruner.upper()}")
     if args.pruner == 'norm':
-        logger.info(f"Using norm type: {args.norm}")
+        logger.info(f"Using norm type: {args.norm.upper()}")
     logger.info(f"Using model: {args.model_name}")
     if args.experiment_mode:
         logger.info("Running in experiment mode with pruning ratios [0.1, 0.9].")
+        logger.info(f"Experiment name: {args.experiment_name}")
     else:
         logger.info(f"Running in normal mode with pruning ratio {args.sparsity:.2f}.")
     logger.info(f"Number of epochs for fine-tuning: {args.epochs}")
     logger.info(f"Batch size: {args.batch_size}, Num workers: {args.num_workers}")
-    logger.info(f"Experiment name: {args.experiment_name}")
     logger.info(f"Run directory: {RUN_DIR}")
     # Load data
     logger.info("Loading data...")
@@ -144,14 +145,21 @@ def main(args):
     dummy_inputs = torch.randn(8, 3, 224, 224).to(config.DEVICE)
     metrics = {
         'sparsity': [],
-        'accuracy': [],
-        'flops': [],
-        'params': [],
-        'latency': [],
+        'accuracy_org': [],
+        'flops_org': [],
+        'params_org': [],
+        'size_org': [],
+        'latency_org': [],
+        'accuracy_after': [],
+        'flops_after': [],
+        'params_after': [],
+        'size_after': [],
+        'latency_after': [],
         'accuracy_drop': [],
         'compression_ratio': [],
         'flops_reduction': [],
-        'latency_reduction': []
+        'size_reduction': [],
+        'latency_reduction': [],
     }
     # Sweep pruning ratios
     if args.experiment_mode:
@@ -162,59 +170,67 @@ def main(args):
         ratios = [args.sparsity]
     metrics['sparsity'] = ratios
     for ratio in ratios:
-        logger.info(f"Pruning ratio {ratio:.2f} start")
-        model = load_model(args.model_name).to(config.DEVICE)
-
+        logger.info(f"Pruning ratio {ratio:.2f}...")
+        model = load_model(args.model_name)
+        model_size = os.path.getsize(os.path.join(config.MODELS_DIR, args.model_name))
         # Compute pre-pruning metrics
-        acc_before = evaluate(model, test_loader, run_dir=RUN_DIR, logger=logger, get_acc=True, report=False)
+        logger.info("Evaluating pre-pruning model...")
+        latency_before, acc_before = evaluate(model, test_loader, run_dir=RUN_DIR, logger=logger, get_acc=True, report=False, return_latency=True)
         flops_before, params_before = tp.utils.count_ops_and_params(model, dummy_inputs)
-        
-        start = time.time()
-        for _ in range(32):
-            _ = model(dummy_inputs)
-        end = time.time()
-        latency_before = end - start
-
+        logger.info(f"Evaluation completed.")
         logger.info(f"Pre-pruning test accuracy: {acc_before:.2f}")
-        logger.info(f"Pre-pruning FLOPs: {flops_before / 1e9:.2f} GFLOPs, Params: {params_before / 1e6:.2f} M")
-        logger.info(f"Pre-pruning latency: {latency_before:.4f} seconds for 32 inferences")
+        logger.info(f"Pre-pruning FLOPs: {flops_before / 1e9:.2f} GFLOPs")
+        logger.info(f"Params: {params_before / 1e6:.2f} M")
+        logger.info(f"Pre-pruning model size: {model_size / 1e6:.2f} MB")
+        logger.info(f"Pre-pruning latency: {latency_before:.4f} seconds (average over test set)")
 
         # Prune model
+        logger.info("Pruning model...")
         model = prune_model(model, dummy_inputs, ratio, args.pruner, args.norm)
+        logger.info("Model pruning completed.")
+        
+        # Get pruned model size
+        buffer = io.BytesIO()
+        torch.save(model.state_dict(), buffer)
+        pruned_model_size = buffer.getbuffer().nbytes
 
         # fine-tune
+        logger.info("Fine-tuning pruned model...")
         if args.fine_tune:
             model = fine_tune_model(model, train_loader, val_loader, args.epochs)
+        logger.info("Fine-tuning completed.")
 
         # Compute post-pruning metrics
-        acc_after = evaluate(model, test_loader, run_dir=RUN_DIR, logger=logger, get_acc=True, report=False)
+        latency_after, acc_after = evaluate(model, test_loader, run_dir=RUN_DIR, logger=logger, get_acc=True, report=False, return_latency=True)
         flops_after, params_after = tp.utils.count_ops_and_params(model, dummy_inputs)
-        start = time.time()
-        for _ in range(32):
-            _ = model(dummy_inputs)
-        end = time.time()
-        latency_after = end - start
         logger.info(f"Post-pruning test accuracy: {acc_after:.2f}")
-        logger.info(f"Post-pruning FLOPs: {flops_after / 1e9:.2f} GFLOPs, Params: {params_after / 1e6:.2f} M")
-        logger.info(f"Post-pruning latency: {latency_after:.4f} seconds for 32 inferences")
+        logger.info(f"Post-pruning FLOPs: {flops_after / 1e9:.2f} GFLOPs")
+        logger.info(f"Params: {params_after / 1e6:.2f} M")
+        logger.info(f"Pruned model size: {pruned_model_size / 1e6:.2f} MB")
+        logger.info(f"Post-pruning latency: {latency_after:.4f} seconds (average over test set)")
 
-        metrics['accuracy'].append(acc_after)
-        metrics['flops'].append(flops_after)
-        metrics['params'].append(params_after)
-        metrics['latency'].append(latency_after)
-
-        # Final metrics
+        # Comparison metrics
         accuracy_diff = (acc_before - acc_after) / acc_before * 100
-        compression_ratio = params_before / params_after
+        compression_ratio = params_before / params_after * 100
         flops_reduction = (flops_before - flops_after) / flops_before * 100
+        size_diff = (model_size - pruned_model_size) / model_size * 100
         latency_diff = (latency_before - latency_after) / latency_before * 100
-        logger.info(f"Accuracy drop: {accuracy_diff:.2f}%")
-        logger.info(f"Compression ratio: {compression_ratio:.2f}x")
-        logger.info(f"FLOPs reduction: {flops_reduction:.2f}%")
-        logger.info(f"Latency reduction: {latency_diff:.2f}%")
-        metrics['accuracy_drop'].append(accuracy_diff)
+
+        # Metrics
+        metrics['accuracy_org'].append(acc_before)
+        metrics['flops_org'].append(flops_before)  
+        metrics['params_org'].append(params_before) 
+        metrics['size_org'].append(model_size)  
+        metrics['latency_org'].append(latency_before)
+        metrics['accuracy_after'].append(acc_after)
+        metrics['flops_after'].append(flops_after)  
+        metrics['params_after'].append(params_after)  
+        metrics['size_after'].append(pruned_model_size)  
+        metrics['latency_after'].append(latency_after)
+        metrics['accuracy_drop'].append(accuracy_diff) 
         metrics['compression_ratio'].append(compression_ratio)
         metrics['flops_reduction'].append(flops_reduction)
+        metrics['size_reduction'].append(size_diff)
         metrics['latency_reduction'].append(latency_diff)
 
         if args.save_model:
@@ -227,12 +243,12 @@ def main(args):
                 save_path = os.path.join(config.MODELS_DIR, f'fpgm_pruned_resnet50_{ratio}.pth')
             torch.save(model.state_dict(), save_path)
             logger.info(f"Model saved at {save_path}")
-    
-    if args.experiment_mode:
-        data = pd.DataFrame(metrics)
-        exp_metrics_path = os.path.join(RUN_DIR, f'{args.experiment_name}_metrics.csv')
-        data.to_csv((exp_metrics_path), index=False)
-        logger.info(f"Experiment completed. Pruning metrics saved to {exp_metrics_path}")
+
+    # Save metrics to CSV
+    data = pd.DataFrame(metrics)
+    pruning_metrics_path = os.path.join(RUN_DIR, f'pruning_metrics.csv')
+    data.to_csv((pruning_metrics_path), index=False)
+    logger.info(f"Pruning metrics saved to {pruning_metrics_path}")
 
         
 if __name__ == "__main__":
@@ -253,7 +269,7 @@ if __name__ == "__main__":
 
     # Config
     parser.add_argument('--pruner', type=str, default='fpgm', choices=['fpgm', 'norm'], help='Pruner type (default: "fpgm")')
-    parser.add_argument('--norm', type=str, default='l1', choices=['l1', 'l2'], help='Norm type for pruning (default: "l1")')
+    parser.add_argument('--norm', type=str, default='l1', choices=['l1', 'l2'], help='Norm type for norm pruning (default: "l1")')
     parser.add_argument('--sparsity', type=float, default=0.5, help='Pruning sparsity level (default: 0.5)')
     parser.add_argument('--fine_tune', action='store_true',
                         help='Whether to fine-tune the model after pruning')

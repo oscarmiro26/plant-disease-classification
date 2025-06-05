@@ -1,4 +1,5 @@
 import os
+from time import time
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
@@ -235,21 +236,28 @@ def evaluate(
     run_dir: str,
     logger: Optional[Logger] = None,
     get_acc: bool = False,
-    report: bool = True
+    report: bool = True,
+    return_latency: bool = False,
 ) -> None:
     """Evaluates model performance on test set and saves metrics.
 
     Args:
         model (nn.Module): Model to evaluate.
         data_loader (DataLoader): Test data loader.
+        run_dir (str): Directory to save evaluation metrics.
         logger (Optional[Logger]): Logger for metric output.
         get_acc (bool): Whether to compute and return accuracy.
+        report (bool): Whether to generate classification report.
+        return_latency (bool): Whether to return latencies.
 
     Returns:
-        Optional[float]: Accuracy if get_acc is True, otherwise None.
+        Optional[List[float]]: List containing average latency and accuracy if requested.
     """
+    return_objects = []
     all_preds, all_labels = [], []
     model.eval()
+    if return_latency:
+        start = time()
     with torch.no_grad():
         for images, labels in data_loader:
             images = images.to(config.DEVICE)
@@ -257,7 +265,12 @@ def evaluate(
             preds = outputs.argmax(dim=1).cpu().tolist()
             all_preds.extend(preds)
             all_labels.extend(labels.tolist())
-
+    if return_latency:
+        end = time()
+        latency = (end - start) / len(data_loader.dataset)
+        return_objects.append(latency)
+        if logger:
+            logger.info(f"Average inference latency: {latency:.4f} seconds per sample")
 
     if report:
         cm = confusion_matrix(all_labels, all_preds)
@@ -280,10 +293,9 @@ def evaluate(
         })
         metrics_df.to_csv(os.path.join(run_dir, 'metrics.csv'), index=False)
 
-    if accuracy:
+    if get_acc:
         accuracy = accuracy_score(all_labels, all_preds) if get_acc else None
-        if logger:
-            logger.info(f"Accuracy: {accuracy:.4f}")
-        return accuracy
-    return None
+        return_objects.append(accuracy)
+
+    return return_objects if return_objects else None
 
