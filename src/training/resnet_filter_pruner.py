@@ -7,7 +7,7 @@ from torch.ao.pruning._experimental.pruner import FPGMPruner
 import numpy as np
 import pandas as pd
 
-from . import config
+from ..training import config
 from ..utils.logger import setup_logger
 from ..utils.resnet_utils import (
     load_model, 
@@ -107,6 +107,17 @@ def fine_tune_model(model, train_loader, val_loader, epochs):
     patience_counter = 0
     # add tqdm here
     for epoch in range(epochs):
+        # Gradual unfreezing
+        if epoch == UNFREEZE_L4_AT:
+            for param in model.layer4.parameters():
+                param.requires_grad = True
+            optim.add_param_group({'params': model.layer4.parameters(), 'lr': LR_LAYER4})
+            logger.info(f"Unfroze layer4 at epoch {epoch} with lr={LR_LAYER4}.")
+        if epoch == UNFREEZE_L3_AT:
+            for param in model.layer3.parameters():
+                param.requires_grad = True
+            optim.add_param_group({'params': model.layer3.parameters(), 'lr': LR_LAYER3})
+            logger.info(f"Unfroze layer3 at epoch {epoch} with lr={LR_LAYER3}.")
         train(model, train_loader, optim, criterion)
         val_loss = validate(model, val_loader, criterion)
         sched.step()
@@ -169,22 +180,20 @@ def main(args):
         logger.info("Running in normal mode with a single pruning ratio.")
         ratios = [args.sparsity]
     metrics['sparsity'] = ratios
+    model = load_model(args.model_name)
+    model_size = os.path.getsize(os.path.join(config.MODELS_DIR, args.model_name))
+    # Compute pre-pruning metrics
+    logger.info("Evaluating pre-pruning model...")
+    latency_before, acc_before = evaluate(model, test_loader, run_dir=RUN_DIR, logger=logger, get_acc=True, report=False, return_latency=True)
+    flops_before, params_before = tp.utils.count_ops_and_params(model, dummy_inputs)
+    logger.info(f"Evaluation completed.")
+    logger.info(f"Pre-pruning test accuracy: {acc_before:.4f}")
+    logger.info(f"Pre-pruning FLOPs: {flops_before / 1e9:.2f} GFLOPs")
+    logger.info(f"Params: {params_before / 1e6:.2f} M")
+    logger.info(f"Pre-pruning model size: {model_size / 1e6:.2f} MB")
+    logger.info(f"Pre-pruning latency: {latency_before:.4f} seconds (average over test set)")
     for ratio in ratios:
         logger.info(f"Pruning ratio {ratio:.2f}...")
-        model = load_model(args.model_name)
-        model_size = os.path.getsize(os.path.join(config.MODELS_DIR, args.model_name))
-        # Compute pre-pruning metrics
-        logger.info("Evaluating pre-pruning model...")
-        latency_before, acc_before = evaluate(model, test_loader, run_dir=RUN_DIR, logger=logger, get_acc=True, report=False, return_latency=True)
-        flops_before, params_before = tp.utils.count_ops_and_params(model, dummy_inputs)
-        logger.info(f"Evaluation completed.")
-        logger.info(f"Pre-pruning test accuracy: {acc_before:.2f}")
-        logger.info(f"Pre-pruning FLOPs: {flops_before / 1e9:.2f} GFLOPs")
-        logger.info(f"Params: {params_before / 1e6:.2f} M")
-        logger.info(f"Pre-pruning model size: {model_size / 1e6:.2f} MB")
-        logger.info(f"Pre-pruning latency: {latency_before:.4f} seconds (average over test set)")
-
-        # Prune model
         logger.info("Pruning model...")
         model = prune_model(model, dummy_inputs, ratio, args.pruner, args.norm)
         logger.info("Model pruning completed.")
@@ -203,7 +212,7 @@ def main(args):
         # Compute post-pruning metrics
         latency_after, acc_after = evaluate(model, test_loader, run_dir=RUN_DIR, logger=logger, get_acc=True, report=False, return_latency=True)
         flops_after, params_after = tp.utils.count_ops_and_params(model, dummy_inputs)
-        logger.info(f"Post-pruning test accuracy: {acc_after:.2f}")
+        logger.info(f"Post-pruning test accuracy: {acc_after:.4f}")
         logger.info(f"Post-pruning FLOPs: {flops_after / 1e9:.2f} GFLOPs")
         logger.info(f"Params: {params_after / 1e6:.2f} M")
         logger.info(f"Pruned model size: {pruned_model_size / 1e6:.2f} MB")
@@ -243,6 +252,8 @@ def main(args):
                 save_path = os.path.join(config.MODELS_DIR, f'fpgm_pruned_resnet50_{ratio}.pth')
             torch.save(model.state_dict(), save_path)
             logger.info(f"Model saved at {save_path}")
+        # Reload model for each ratio
+        model = load_model(args.model_name)  
 
     # Save metrics to CSV
     data = pd.DataFrame(metrics)
