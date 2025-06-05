@@ -76,7 +76,6 @@ def prune_model(model, dummy_inputs, ratio, pruner_type, norm):
         pruner.step()
         return model
     else:
-        # FPGM: build a config for every Conv2d weight tensor
         pruning_config = []
         for name, module in model.named_modules():
             if isinstance(module, torch.nn.Conv2d):
@@ -99,26 +98,25 @@ def fine_tune_model(model, train_loader, val_loader, epochs):
     for _, param in model.named_parameters(): param.requires_grad = False
     for param in model.fc.parameters(): param.requires_grad = True
 
-    optim = get_optimizer(model, lr=LR_CLASSIFIER)
-    sched = get_scheduler(optim, step_size=STEP_SIZE, gamma=GAMMA)
+    optimizer = get_optimizer(model, lr=LR_CLASSIFIER)
+    sched = get_scheduler(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
     criterion = get_criterion()
 
     best_val_loss = float('inf')
     patience_counter = 0
-    # add tqdm here
     for epoch in range(epochs):
         # Gradual unfreezing
         if epoch == UNFREEZE_L4_AT:
             for param in model.layer4.parameters():
                 param.requires_grad = True
-            optim.add_param_group({'params': model.layer4.parameters(), 'lr': LR_LAYER4})
+            optimizer.add_param_group({'params': model.layer4.parameters(), 'lr': LR_LAYER4})
             logger.info(f"Unfroze layer4 at epoch {epoch} with lr={LR_LAYER4}.")
         if epoch == UNFREEZE_L3_AT:
             for param in model.layer3.parameters():
                 param.requires_grad = True
-            optim.add_param_group({'params': model.layer3.parameters(), 'lr': LR_LAYER3})
+            optimizer.add_param_group({'params': model.layer3.parameters(), 'lr': LR_LAYER3})
             logger.info(f"Unfroze layer3 at epoch {epoch} with lr={LR_LAYER3}.")
-        train(model, train_loader, optim, criterion)
+        train(model, train_loader, optimizer, criterion)
         val_loss = validate(model, val_loader, criterion)
         sched.step()
 

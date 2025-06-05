@@ -104,11 +104,9 @@ def get_optimizer(
     Returns:
         torch.optim.Optimizer: Configured AdamW optimizer.
     """
-    return torch.optim.AdamW(
-        model.parameters(),
-        lr=lr,
-        weight_decay=weight_decay
-    )
+    return torch.optim.AdamW([
+        {'params': model.fc.parameters(), 'lr': lr},
+    ], weight_decay=weight_decay)
 
 def get_criterion() -> Loss:
     """Return a Focal Loss criterion.
