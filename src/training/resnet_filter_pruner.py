@@ -87,7 +87,8 @@ def prune_model(model, dummy_inputs, ratio, pruner_type, norm):
         pruner.prepare(model, pruning_config)
         pruner.enable_mask_update = True
         pruner.step()
-        return pruner.prune()
+        model = pruner.prune()
+        return model
 
 def fine_tune_model(model, train_loader, val_loader, epochs):
     """
@@ -139,7 +140,6 @@ def main(args):
     logger.info(f"Using model: {args.model_name}")
     if args.experiment_mode:
         logger.info("Running in experiment mode with pruning ratios [0.1, 0.9].")
-        logger.info(f"Experiment name: {args.experiment_name}")
     else:
         logger.info(f"Running in normal mode with pruning ratio {args.sparsity:.2f}.")
     logger.info(f"Number of epochs for fine-tuning: {args.epochs}")
