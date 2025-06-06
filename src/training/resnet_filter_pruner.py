@@ -22,7 +22,7 @@ from ..utils.resnet_utils import (
 
 
 # Pruning Hyperparameters
-FILTER_NORM_RANGE = range(0.10, 0.90, 0.10)
+FILTER_RANGE = list(np.arange(0.1, 1.0, 0.1))
 RANDOM_SEED = 42
 
 # Learning rates (1/10 of original)
@@ -83,7 +83,7 @@ def prune_model(model, dummy_inputs, ratio, pruner_type, norm):
                     "tensor_fqn": f"{name}.weight",
                     "sparsity_level": ratio
                 })
-        pruner = FPGMPruner(model, config=pruning_config)
+        pruner = FPGMPruner(sparsity_level=ratio)
         pruner.prepare(model, pruning_config)
         pruner.enable_mask_update = True
         pruner.step()
@@ -172,8 +172,8 @@ def main(args):
     }
     # Sweep pruning ratios
     if args.experiment_mode:
-        logger.info(f"Running in experiment mode with predefined pruning ratios {FILTER_NORM_RANGE}.")
-        ratios = FILTER_NORM_RANGE
+        logger.info(f"Running in experiment mode with predefined pruning ratios {FILTER_RANGE}.")
+        ratios = FILTER_RANGE
     else:
         logger.info("Running in normal mode with a single pruning ratio.")
         ratios = [args.sparsity]
