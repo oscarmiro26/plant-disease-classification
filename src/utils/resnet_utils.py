@@ -1,5 +1,5 @@
 import os
-from time import time
+from time import perf_counter
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
@@ -255,7 +255,7 @@ def evaluate(
     all_preds, all_labels = [], []
     model.eval()
     if return_latency:
-        start = time()
+        start = perf_counter()
     with torch.no_grad():
         for images, labels in data_loader:
             images = images.to(config.DEVICE)
@@ -264,7 +264,7 @@ def evaluate(
             all_preds.extend(preds)
             all_labels.extend(labels.tolist())
     if return_latency:
-        end = time()
+        end = perf_counter()
         latency = (end - start) / len(data_loader.dataset)
         return_objects.append(latency)
         if logger:

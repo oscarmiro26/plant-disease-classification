@@ -22,7 +22,7 @@ from ..utils.resnet_utils import (
 
 
 # Pruning Hyperparameters
-FILTER_NORM_RANGE = [0.10, 0.90, 0.10]
+FILTER_NORM_RANGE = range(0.10, 0.90, 0.10)
 RANDOM_SEED = 42
 
 # Learning rates (1/10 of original)
@@ -273,8 +273,6 @@ if __name__ == "__main__":
     # Experiment
     parser.add_argument('--experiment_mode', action='store_true',
                         help='Run in experiment mode. Configured in launch_experiment.sh')
-    parser.add_argument('--experiment_name', type=str, default='pruning_experiment',
-                        help='Name of the experiment (default: "pruning_experiment")')
 
     # Config
     parser.add_argument('--pruner', type=str, default='fpgm', choices=['fpgm', 'norm'], help='Pruner type (default: "fpgm")')
