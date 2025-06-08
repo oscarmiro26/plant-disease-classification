@@ -14,4 +14,4 @@ cd /home3/$USER/plant-disease-classification
 eval "$(conda shell.bash hook)"
 conda activate plant-disease
 
-srun python -u -m src.postprocessing.uncertainty_calibration.py --model-path outputs/models/resnet50_9897.pth
+srun python -u -m src.postprocessing.uncertainty_calibration --model-path outputs/models/resnet50_9897.pth
