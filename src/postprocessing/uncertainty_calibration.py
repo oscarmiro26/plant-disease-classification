@@ -199,8 +199,8 @@ def main(args):
         for imgs, labels in test_loader:
             imgs = imgs.to(device)
             logits = model(imgs)
-            all_logits.append(logits.cpu())
-            all_labels.append(labels)
+            all_logits.append(logits)
+            all_labels.append(labels.to(device))
     logits = torch.cat(all_logits)
     labels = torch.cat(all_labels)
 
