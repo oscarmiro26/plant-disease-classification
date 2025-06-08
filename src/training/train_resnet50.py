@@ -150,7 +150,7 @@ def train_and_evaluate():
     criterion = Loss(
         loss_type="focal_loss",
         samples_per_class=samples_per_class,
-        class_balanced=True
+        class_balanced=False
     ).to(config.DEVICE)
 
     # Start optimizer with only the head parameters

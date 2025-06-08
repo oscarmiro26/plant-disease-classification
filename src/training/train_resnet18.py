@@ -100,7 +100,7 @@ def train_and_evaluate():
     model = model.to(config.DEVICE)
 
     samples_per_class = [train_df['label'].tolist().count(lbl) for lbl in config.LABEL_MAP]
-    criterion = Loss("focal_loss", samples_per_class, class_balanced=True).to(config.DEVICE)
+    criterion = Loss("focal_loss", samples_per_class, class_balanced=False).to(config.DEVICE)
 
     optimizer = torch.optim.AdamW(
         [{'params': model.fc.parameters(), 'lr': LR_CLASSIFIER}],
