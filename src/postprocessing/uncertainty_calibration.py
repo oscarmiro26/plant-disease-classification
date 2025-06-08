@@ -129,13 +129,13 @@ def plot_reliability_diagram(logits: torch.Tensor,
         if mask.sum() > 0:
             acc_bin = accuracies[mask].mean()
             conf_bin = confidences[mask].mean()
-            gaps[i] = acc_bin - conf_bin
+            gaps[i] = acc_bin
 
     plt.figure(figsize=(6, 6))
     plt.plot([0, 1], [0, 1], linestyle="--")
     plt.bar(lows, gaps, width=1.0/n_bins, edgecolor="black", align="edge", alpha=0.7)
     plt.xlabel("Confidence")
-    plt.ylabel("Accuracy – Confidence")
+    plt.ylabel("Accuracy")
     plt.title("Reliability Diagram (gap)")
     plt.tight_layout()
     plt.savefig(filename)
