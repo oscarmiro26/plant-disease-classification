@@ -128,12 +128,12 @@ def plot_reliability_diagram(logits: torch.Tensor,
     prop_bin = np.zeros(n_bins)
 
     for i, (lower, upper) in enumerate(zip(bin_lowers, bin_uppers)):
-        in_bin = (confidences.cpu().numpy() > lower) & (confidences.cpu().numpy() <= upper)
+        in_bin = (confidences.detach().cpu().numpy() > lower) & (confidences.detach().cpu().numpy() <= upper)
         prop_in_bin = in_bin.mean()
         prop_bin[i] = prop_in_bin
         if prop_in_bin > 0:
-            accuracies_bin[i]  = accuracies.cpu().numpy()[in_bin].mean()
-            confidences_bin[i] = confidences.cpu().numpy()[in_bin].mean()
+            accuracies_bin[i]  = accuracies.detach().cpu().numpy()[in_bin].mean()
+            confidences_bin[i] = confidences.detach().cpu().numpy()[in_bin].mean()
 
     # plot
     plt.figure(figsize=(6, 6))
