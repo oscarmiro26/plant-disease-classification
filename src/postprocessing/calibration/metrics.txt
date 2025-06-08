@@ -1,0 +1,6 @@
+Optimal T: 0.8834
+NLL before / after: 0.1428 → 0.0880
+ECE before / after: 0.1084 → 0.0603
+Test ECE before: 0.1087
+Test ECE after : 0.0608
+Reliability diagrams saved to calibration
