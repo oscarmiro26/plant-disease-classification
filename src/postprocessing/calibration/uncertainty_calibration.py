@@ -15,9 +15,9 @@ import torchvision.models as models
 import matplotlib.pyplot as plt
 import numpy as np
 
-from ..data.splitting import create_splits
-from ..data.datasets import PlantDiseaseDataset
-from ..training import config
+from ...data.splitting import create_splits
+from ...data.datasets import PlantDiseaseDataset
+from ...training import config
 
 
 class ModelWithTemperature(nn.Module):
