@@ -180,4 +180,5 @@ cython_debug/
 *.pkl
 *.pth
 !outputs/models/*
+!outputs/models/**/*
 /logs/**/*.py
