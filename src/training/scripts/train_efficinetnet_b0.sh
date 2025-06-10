@@ -14,4 +14,4 @@ cd /home3/$USER/plant-disease-classification
 eval "$(conda shell.bash hook)"
 conda activate plant-disease
 
-srun python -u -m src.training.train_efficinetnet_b0
+srun python -u -m src.training.train_efficientnet_b0
