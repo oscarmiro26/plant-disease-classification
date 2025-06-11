@@ -1,7 +1,7 @@
 #!/bin/bash --login
 #SBATCH --job-name=all_models_train
 #SBATCH --output=all_models_train_%j.out
-#SBATCH --time=8:00:00
+#SBATCH --time=24:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4

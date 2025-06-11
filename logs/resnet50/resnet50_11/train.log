@@ -1,0 +1,105 @@
+2025-06-08 20:43:35,055 [INFO] Created logger with run_dir: /home3/s5238366/plant-disease-classification/src/training/../../logs/resnet50/resnet50_11
+2025-06-08 20:43:35,056 [INFO] Starting training run.
+2025-06-08 20:43:35,065 [INFO] Copied main script to /home3/s5238366/plant-disease-classification/src/training/../../logs/resnet50/resnet50_11/train_resnet50.py
+2025-06-08 20:44:40,319 [INFO] Epoch 01 | Train Loss: 0.5846 | Val Loss: 0.2719
+2025-06-08 20:45:37,746 [INFO] Epoch 02 | Train Loss: 0.3050 | Val Loss: 0.2055
+2025-06-08 20:46:35,214 [INFO] Epoch 03 | Train Loss: 0.2606 | Val Loss: 0.1842
+2025-06-08 20:47:32,699 [INFO] Epoch 04 | Train Loss: 0.2474 | Val Loss: 0.1765
+2025-06-08 20:47:32,701 [INFO] Unfroze layer4 at epoch 5 with lr=0.0001
+2025-06-08 20:48:40,537 [INFO] Epoch 05 | Train Loss: 0.1554 | Val Loss: 0.0655
+2025-06-08 20:49:48,570 [INFO] Epoch 06 | Train Loss: 0.1037 | Val Loss: 0.0482
+2025-06-08 20:50:56,664 [INFO] Epoch 07 | Train Loss: 0.0865 | Val Loss: 0.0365
+2025-06-08 20:52:04,627 [INFO] Epoch 08 | Train Loss: 0.0681 | Val Loss: 0.0295
+2025-06-08 20:53:12,496 [INFO] Epoch 09 | Train Loss: 0.0605 | Val Loss: 0.0262
+2025-06-08 20:53:12,497 [INFO] Unfroze layer3 at epoch 10 with lr=1e-05
+2025-06-08 20:54:42,311 [INFO] Epoch 10 | Train Loss: 0.0593 | Val Loss: 0.0225
+2025-06-08 20:56:12,351 [INFO] Epoch 11 | Train Loss: 0.0545 | Val Loss: 0.0221
+2025-06-08 20:57:42,583 [INFO] Epoch 12 | Train Loss: 0.0467 | Val Loss: 0.0235
+2025-06-08 20:59:12,719 [INFO] Epoch 13 | Train Loss: 0.0443 | Val Loss: 0.0236
+2025-06-08 21:00:42,968 [INFO] Epoch 14 | Train Loss: 0.0444 | Val Loss: 0.0211
+2025-06-08 21:02:13,137 [INFO] Epoch 15 | Train Loss: 0.0420 | Val Loss: 0.0184
+2025-06-08 21:03:43,878 [INFO] Epoch 16 | Train Loss: 0.0417 | Val Loss: 0.0193
+2025-06-08 21:05:14,133 [INFO] Epoch 17 | Train Loss: 0.0415 | Val Loss: 0.0179
+2025-06-08 21:06:44,321 [INFO] Epoch 18 | Train Loss: 0.0398 | Val Loss: 0.0181
+2025-06-08 21:08:14,453 [INFO] Epoch 19 | Train Loss: 0.0390 | Val Loss: 0.0183
+2025-06-08 21:09:44,720 [INFO] Epoch 20 | Train Loss: 0.0394 | Val Loss: 0.0189
+2025-06-08 21:11:15,011 [INFO] Epoch 21 | Train Loss: 0.0401 | Val Loss: 0.0193
+2025-06-08 21:12:45,329 [INFO] Epoch 22 | Train Loss: 0.0383 | Val Loss: 0.0202
+2025-06-08 21:14:15,497 [INFO] Epoch 23 | Train Loss: 0.0398 | Val Loss: 0.0195
+2025-06-08 21:15:46,386 [INFO] Epoch 24 | Train Loss: 0.0389 | Val Loss: 0.0178
+2025-06-08 21:17:16,679 [INFO] Epoch 25 | Train Loss: 0.0379 | Val Loss: 0.0188
+2025-06-08 21:18:46,958 [INFO] Epoch 26 | Train Loss: 0.0368 | Val Loss: 0.0208
+2025-06-08 21:20:17,267 [INFO] Epoch 27 | Train Loss: 0.0380 | Val Loss: 0.0176
+2025-06-08 21:21:47,544 [INFO] Epoch 28 | Train Loss: 0.0382 | Val Loss: 0.0176
+2025-06-08 21:23:17,764 [INFO] Epoch 29 | Train Loss: 0.0402 | Val Loss: 0.0186
+2025-06-08 21:24:48,020 [INFO] Epoch 30 | Train Loss: 0.0381 | Val Loss: 0.0179
+2025-06-08 21:26:18,315 [INFO] Epoch 31 | Train Loss: 0.0379 | Val Loss: 0.0182
+2025-06-08 21:27:48,555 [INFO] Epoch 32 | Train Loss: 0.0388 | Val Loss: 0.0172
+2025-06-08 21:29:18,766 [INFO] Epoch 33 | Train Loss: 0.0392 | Val Loss: 0.0183
+2025-06-08 21:30:49,005 [INFO] Epoch 34 | Train Loss: 0.0397 | Val Loss: 0.0176
+2025-06-08 21:32:19,264 [INFO] Epoch 35 | Train Loss: 0.0391 | Val Loss: 0.0188
+2025-06-08 21:33:49,539 [INFO] Epoch 36 | Train Loss: 0.0384 | Val Loss: 0.0195
+2025-06-08 21:35:19,819 [INFO] Epoch 37 | Train Loss: 0.0398 | Val Loss: 0.0183
+2025-06-08 21:36:50,092 [INFO] Epoch 38 | Train Loss: 0.0372 | Val Loss: 0.0195
+2025-06-08 21:38:20,309 [INFO] Epoch 39 | Train Loss: 0.0389 | Val Loss: 0.0197
+2025-06-08 21:39:50,582 [INFO] Epoch 40 | Train Loss: 0.0389 | Val Loss: 0.0185
+2025-06-08 21:41:20,809 [INFO] Epoch 41 | Train Loss: 0.0406 | Val Loss: 0.0180
+2025-06-08 21:42:51,139 [INFO] Epoch 42 | Train Loss: 0.0410 | Val Loss: 0.0185
+2025-06-08 21:42:51,140 [INFO] Early stopping at epoch 42 (no improvement for 10 epochs).
+2025-06-08 21:42:51,402 [INFO] Model weights saved to /home3/s5238366/plant-disease-classification/src/training/../../logs/resnet50/resnet50_11/resnet50.pth
+2025-06-08 21:42:51,550 [INFO] Loss curve saved to /home3/s5238366/plant-disease-classification/src/training/../../logs/resnet50/resnet50_11/loss_curve.png
+2025-06-08 21:43:01,449 [INFO] Test Confusion Matrix:
+[[ 94   0   0 ...   0   0   0]
+ [  0  93   0 ...   0   0   0]
+ [  0   0  41 ...   0   0   0]
+ ...
+ [  0   0   0 ... 793   0   0]
+ [  0   0   0 ...   0  56   0]
+ [  0   0   0 ...   0   0 239]]
+2025-06-08 21:43:01,450 [INFO] Test Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     1.0000    1.0000    1.0000        94
+                                 Apple___Black_rot     1.0000    1.0000    1.0000        93
+                          Apple___Cedar_apple_rust     1.0000    1.0000    1.0000        41
+                                   Apple___healthy     0.9879    0.9879    0.9879       247
+                               Blueberry___healthy     1.0000    0.9956    0.9978       225
+          Cherry_(including_sour)___Powdery_mildew     1.0000    1.0000    1.0000       158
+                 Cherry_(including_sour)___healthy     1.0000    0.9922    0.9961       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.8352    0.9870    0.9048        77
+                       Corn_(maize)___Common_rust_     0.9944    1.0000    0.9972       179
+               Corn_(maize)___Northern_Leaf_Blight     0.9779    0.8986    0.9366       148
+                            Corn_(maize)___healthy     1.0000    1.0000    1.0000       174
+                                 Grape___Black_rot     0.9888    1.0000    0.9944       177
+                      Grape___Esca_(Black_Measles)     0.9951    0.9903    0.9927       207
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     1.0000    1.0000    1.0000       161
+                                   Grape___healthy     0.9844    1.0000    0.9921        63
+          Orange___Haunglongbing_(Citrus_greening)     1.0000    1.0000    1.0000       826
+                            Peach___Bacterial_spot     1.0000    0.9971    0.9985       345
+                                   Peach___healthy     1.0000    0.9815    0.9907        54
+                     Pepper,_bell___Bacterial_spot     0.9933    0.9933    0.9933       150
+                            Pepper,_bell___healthy     0.9955    0.9955    0.9955       222
+                             Potato___Early_blight     1.0000    0.9867    0.9933       150
+                              Potato___Late_blight     1.0000    0.9733    0.9865       150
+                                  Potato___healthy     1.0000    0.9565    0.9778        23
+                               Raspberry___healthy     1.0000    1.0000    1.0000        56
+                                 Soybean___healthy     0.9961    0.9987    0.9974       764
+                           Squash___Powdery_mildew     1.0000    1.0000    1.0000       275
+                          Strawberry___Leaf_scorch     1.0000    0.9880    0.9939       166
+                              Strawberry___healthy     1.0000    1.0000    1.0000        68
+                           Tomato___Bacterial_spot     0.9722    0.9875    0.9798       319
+                             Tomato___Early_blight     0.9392    0.9267    0.9329       150
+                              Tomato___Late_blight     0.9579    0.9545    0.9562       286
+                                Tomato___Leaf_Mold     0.9861    0.9930    0.9895       143
+                       Tomato___Septoria_leaf_spot     0.9737    0.9737    0.9737       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.9833    0.9363    0.9592       251
+                              Tomato___Target_Spot     0.8973    0.9526    0.9241       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     1.0000    0.9863    0.9931       804
+                      Tomato___Tomato_mosaic_virus     1.0000    1.0000    1.0000        56
+                                  Tomato___healthy     0.9484    1.0000    0.9735       239
+
+                                          accuracy                         0.9865      8146
+                                         macro avg     0.9844    0.9851    0.9844      8146
+                                      weighted avg     0.9870    0.9865    0.9866      8146
+
+2025-06-08 21:43:01,475 [INFO] Per-class metrics saved to /home3/s5238366/plant-disease-classification/src/training/../../logs/resnet50/resnet50_11/metrics.csv

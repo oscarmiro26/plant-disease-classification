@@ -180,4 +180,6 @@ cython_debug/
 *.pkl
 *.pth
 !outputs/models/*
+!outputs/models/**/*
+outputs/models/resnet_ensemble
 /logs/**/*.py
