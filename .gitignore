@@ -181,3 +181,4 @@ cython_debug/
 *.pth
 !outputs/models/*
 /logs/**/*.py
+*.sh
