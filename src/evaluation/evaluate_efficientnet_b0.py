@@ -140,7 +140,6 @@ def evaluate_agent(model_path):
     plot_path = os.path.join(os.path.dirname(model_path), "confusion_matrix.png")
     plt.savefig(plot_path)
     print(f"Confusion Matrix plot saved to: {plot_path}")
-    # plt.show() # Uncomment to display the plot if running in an interactive environment
 
 
 if __name__ == "__main__":
