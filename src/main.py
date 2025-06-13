@@ -20,7 +20,6 @@ from .data.preprocessing import normalize_transform
 ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/JPEG", "image/png"]
 ALLOWED_MODELS = ["svm", "resnet"]  # Add other models here
 
-
 class ModelInput(BaseModel):
     model_type: Annotated[str, Form(...)]
     file: Annotated[UploadFile, File(...)]
