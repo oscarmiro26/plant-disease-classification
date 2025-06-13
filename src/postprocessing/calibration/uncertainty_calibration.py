@@ -3,7 +3,7 @@ import os
 import sys
 import argparse
 
-# ─── Make relative imports work when running this file directly ─────────────
+#  Make relative imports work when running this file directly
 if __name__ == "__main__" and __package__ is None:
     __package__ = "training"
 
@@ -25,6 +25,7 @@ class ModelWithTemperature(nn.Module):
     Decorator that adds a single log-temperature parameter to a pretrained model,
     allowing T = exp(log_T) to be learned (so T can go < 1 or > 1).
     """
+
     def __init__(self, model: nn.Module):
         super().__init__()
         self.model = model
@@ -41,7 +42,9 @@ class ModelWithTemperature(nn.Module):
         return logits / T.unsqueeze(1).expand(logits.size(0), logits.size(1))
 
     @torch.no_grad()
-    def compute_ece(self, logits: torch.Tensor, labels: torch.Tensor, n_bins: int = 15) -> float:
+    def compute_ece(
+        self, logits: torch.Tensor, labels: torch.Tensor, n_bins: int = 15
+    ) -> float:
         """
         Expected Calibration Error (ECE), binning the confidence range [0,1].
         """
@@ -107,18 +110,17 @@ class ModelWithTemperature(nn.Module):
         return T_opt
 
 
-def plot_reliability_diagram(logits: torch.Tensor,
-                             labels: torch.Tensor,
-                             n_bins: int,
-                             filename: str):
+def plot_reliability_diagram(
+    logits: torch.Tensor, labels: torch.Tensor, n_bins: int, filename: str
+):
     """
-    Plots accuracy – confidence gap bars and saves to `filename`.
+    Plots accuracy -- confidence gap bars and saves to `filename`.
     """
     softmaxes = torch.softmax(logits, dim=1)
     confidences = softmaxes.max(dim=1)[0].detach().cpu().numpy()
     predictions = softmaxes.max(dim=1)[1].detach().cpu().numpy()
-    labels_np   = labels.detach().cpu().numpy()
-    accuracies  = (predictions == labels_np).astype(float)
+    labels_np = labels.detach().cpu().numpy()
+    accuracies = (predictions == labels_np).astype(float)
 
     bin_edges = np.linspace(0, 1, n_bins + 1)
     lows, ups = bin_edges[:-1], bin_edges[1:]
@@ -133,7 +135,7 @@ def plot_reliability_diagram(logits: torch.Tensor,
 
     plt.figure(figsize=(6, 6))
     plt.plot([0, 1], [0, 1], linestyle="--")
-    plt.bar(lows, gaps, width=1.0/n_bins, edgecolor="black", align="edge", alpha=0.7)
+    plt.bar(lows, gaps, width=1.0 / n_bins, edgecolor="black", align="edge", alpha=0.7)
     plt.xlabel("Confidence")
     plt.ylabel("Accuracy")
     plt.title("Reliability Diagram (gap)")
@@ -147,26 +149,32 @@ def main(args):
 
     # 1) recreate splits
     train_df, val_df, test_df = create_splits(
-        data_dir  = config.RAW_DATA_DIR,
-        label_map = config.LABEL_MAP,
-        test_size = config.TEST_SPLIT_SIZE,
-        val_size  = config.VALIDATION_SPLIT_SIZE,
+        data_dir=config.RAW_DATA_DIR,
+        label_map=config.LABEL_MAP,
+        test_size=config.TEST_SPLIT_SIZE,
+        val_size=config.VALIDATION_SPLIT_SIZE,
     )
 
     # 2) data loaders
     norm_mean = [0.485, 0.456, 0.406]
-    norm_std  = [0.229, 0.224, 0.225]
-    transform = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize(norm_mean, norm_std),
-    ])
+    norm_std = [0.229, 0.224, 0.225]
+    transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(norm_mean, norm_std),
+        ]
+    )
 
-    val_ds  = PlantDiseaseDataset(val_df,  transform=transform)
+    val_ds = PlantDiseaseDataset(val_df, transform=transform)
     test_ds = PlantDiseaseDataset(test_df, transform=transform)
-    val_loader  = DataLoader(val_ds,  batch_size=args.batch_size, shuffle=False, num_workers=4)
-    test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False, num_workers=4)
+    val_loader = DataLoader(
+        val_ds, batch_size=args.batch_size, shuffle=False, num_workers=4
+    )
+    test_loader = DataLoader(
+        test_ds, batch_size=args.batch_size, shuffle=False, num_workers=4
+    )
 
     # 3) load model
     model = models.resnet50(weights=None)
@@ -202,22 +210,43 @@ def main(args):
 
     # 6) plots
     os.makedirs(args.output_dir, exist_ok=True)
-    plot_reliability_diagram(logits, labels,   args.n_bins,
-                             os.path.join(args.output_dir, "reliability_before.png"))
-    plot_reliability_diagram(model_ts.temperature_scale(logits),
-                             labels, args.n_bins,
-                             os.path.join(args.output_dir, "reliability_after.png"))
+    plot_reliability_diagram(
+        logits,
+        labels,
+        args.n_bins,
+        os.path.join(args.output_dir, "reliability_before.png"),
+    )
+    plot_reliability_diagram(
+        model_ts.temperature_scale(logits),
+        labels,
+        args.n_bins,
+        os.path.join(args.output_dir, "reliability_after.png"),
+    )
     print(f"Reliability diagrams saved to {args.output_dir}")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser("Uncertainty calibration via log‐temperature scaling")
-    parser.add_argument("--model-path", type=str, required=True,
-                        help="Path to your trained resnet50.pth")
-    parser.add_argument("--output-dir", type=str, default="calibration",
-                        help="Directory to save the plots")
+    parser = argparse.ArgumentParser(
+        "Uncertainty calibration via log‐temperature scaling"
+    )
+    parser.add_argument(
+        "--model-path",
+        type=str,
+        required=True,
+        help="Path to your trained resnet50.pth",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default="calibration",
+        help="Directory to save the plots",
+    )
     parser.add_argument("--batch-size", type=int, default=64)
-    parser.add_argument("--n-bins", type=int, default=15,
-                        help="Number of bins for ECE / reliability diagram")
+    parser.add_argument(
+        "--n-bins",
+        type=int,
+        default=15,
+        help="Number of bins for ECE / reliability diagram",
+    )
     args = parser.parse_args()
     main(args)

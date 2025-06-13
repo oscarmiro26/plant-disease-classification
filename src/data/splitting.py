@@ -24,7 +24,11 @@ def create_splits(data_dir, label_map, test_size, val_size, random_seed=None):
             continue
 
         try:
-            image_files = [f for f in os.listdir(class_dir) if os.path.isfile(os.path.join(class_dir, f))]
+            image_files = [
+                f
+                for f in os.listdir(class_dir)
+                if os.path.isfile(os.path.join(class_dir, f))
+            ]
             for img_file in image_files:
                 filepath = os.path.join(class_dir, img_file)
                 filepaths.append(filepath)
@@ -41,20 +45,17 @@ def create_splits(data_dir, label_map, test_size, val_size, random_seed=None):
     print(f"Found {len(full_df)} total images across {len(all_classes)} classes.")
 
     # Check if every class has enough data to perform splits (3 images minimum)
-    min_samples = full_df['label'].value_counts().min()
+    min_samples = full_df["label"].value_counts().min()
     if min_samples < 3:
         print(f"Not enough samples for splits. Minimum samples: {min_samples}")
 
     print("Splitting data...")
-    X = full_df['filepath']
-    y = full_df['label']
+    X = full_df["filepath"]
+    y = full_df["label"]
 
     try:
         X_train_val, X_test, y_train_val, y_test = train_test_split(
-            X, y, 
-            test_size=test_size, 
-            random_state=random_seed,
-            stratify=y
+            X, y, test_size=test_size, random_state=random_seed, stratify=y
         )
 
         # Because now the proportion of data left is (1 - test_size), we need to adjust
@@ -63,16 +64,19 @@ def create_splits(data_dir, label_map, test_size, val_size, random_seed=None):
         val_split_adjusted = val_size / remaining_proportion
 
         X_train, X_val, y_train, y_val = train_test_split(
-            X_train_val, y_train_val, 
-            test_size=val_split_adjusted, 
+            X_train_val,
+            y_train_val,
+            test_size=val_split_adjusted,
             random_state=random_seed,
-            stratify=y_train_val
+            stratify=y_train_val,
         )
     except Exception as e:
         print(f"Error during stratified splitting: {e}.")
         return None, None, None
 
-    train_df = pd.DataFrame({"filepath": X_train, "label": y_train}).reset_index(drop=True)
+    train_df = pd.DataFrame({"filepath": X_train, "label": y_train}).reset_index(
+        drop=True
+    )
     val_df = pd.DataFrame({"filepath": X_val, "label": y_val}).reset_index(drop=True)
     test_df = pd.DataFrame({"filepath": X_test, "label": y_test}).reset_index(drop=True)
 
@@ -87,4 +91,3 @@ def create_splits(data_dir, label_map, test_size, val_size, random_seed=None):
         return None, None, None
 
     return train_df, val_df, test_df
-    

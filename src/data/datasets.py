@@ -8,6 +8,7 @@ import pandas as pd
 
 from ..training import config
 
+
 class PlantDiseaseDataset(Dataset):
     def __init__(self, dataframe, transform=None):
         self.dataframe = dataframe
@@ -22,12 +23,12 @@ class PlantDiseaseDataset(Dataset):
             idx = idx.tolist()
 
         row = self.dataframe.iloc[idx]
-        img_path = row['filepath']
-        label_str = row['label']
-        
+        img_path = row["filepath"]
+        label_str = row["label"]
+
         try:
             with Image.open(img_path) as img:
-                img = img.convert('RGB')
+                img = img.convert("RGB")
         except FileNotFoundError:
             raise FileNotFoundError(f"Image file not found at {img_path}.")
         except Exception as e:
@@ -43,5 +44,6 @@ class PlantDiseaseDataset(Dataset):
             img = T.ToTensor()(img)
 
         return img, torch.tensor(label_index, dtype=torch.long)
+
 
 # print("PlantVillageDataset class defined.")
