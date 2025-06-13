@@ -1,0 +1,85 @@
+2025-06-10 10:55:05,842 [INFO] Created logger with run_dir: /home3/s5238366/plant-disease-classification/src/training/../../logs/efficientnet_b0/efficientnet_b0_1
+2025-06-10 10:55:05,843 [INFO] Starting training run.
+2025-06-10 10:55:05,849 [INFO] Copied main script to /home3/s5238366/plant-disease-classification/src/training/../../logs/efficientnet_b0/efficientnet_b0_1/train_efficientnet_b0.py
+2025-06-10 10:57:41,039 [INFO] Epoch 1: Train 0.6416 | Val 0.3215
+2025-06-10 11:00:12,372 [INFO] Epoch 2: Train 0.4048 | Val 0.2882
+2025-06-10 11:02:41,758 [INFO] Epoch 3: Train 0.3922 | Val 0.2611
+2025-06-10 11:05:11,961 [INFO] Epoch 4: Train 0.3768 | Val 0.2482
+2025-06-10 11:07:35,996 [INFO] Epoch 5: Train 0.3723 | Val 0.2495
+2025-06-10 11:10:05,728 [INFO] Epoch 6: Train 0.3711 | Val 0.2660
+2025-06-10 11:12:36,165 [INFO] Epoch 7: Train 0.3626 | Val 0.2531
+2025-06-10 11:15:03,721 [INFO] Epoch 8: Train 0.3503 | Val 0.2200
+2025-06-10 11:17:32,853 [INFO] Epoch 9: Train 0.3438 | Val 0.2228
+2025-06-10 11:19:58,835 [INFO] Epoch 10: Train 0.3350 | Val 0.2236
+2025-06-10 11:22:28,630 [INFO] Epoch 11: Train 0.3289 | Val 0.2223
+2025-06-10 11:25:01,279 [INFO] Epoch 12: Train 0.3232 | Val 0.2422
+2025-06-10 11:27:31,431 [INFO] Epoch 13: Train 0.3239 | Val 0.2169
+2025-06-10 11:30:08,592 [INFO] Epoch 14: Train 0.3223 | Val 0.2290
+2025-06-10 11:32:28,252 [INFO] Epoch 15: Train 0.3173 | Val 0.2188
+2025-06-10 11:34:58,901 [INFO] Epoch 16: Train 0.3156 | Val 0.2158
+2025-06-10 11:37:24,306 [INFO] Epoch 17: Train 0.3171 | Val 0.2105
+2025-06-10 11:39:58,553 [INFO] Epoch 18: Train 0.3133 | Val 0.2145
+2025-06-10 11:42:27,895 [INFO] Epoch 19: Train 0.3174 | Val 0.2129
+2025-06-10 11:44:55,439 [INFO] Epoch 20: Train 0.3174 | Val 0.2148
+2025-06-10 11:47:30,571 [INFO] Epoch 21: Train 0.3142 | Val 0.2262
+2025-06-10 11:49:54,112 [INFO] Epoch 22: Train 0.3110 | Val 0.2114
+2025-06-10 11:52:30,261 [INFO] Epoch 23: Train 0.3121 | Val 0.2115
+2025-06-10 11:54:56,259 [INFO] Epoch 24: Train 0.3211 | Val 0.2183
+2025-06-10 11:57:23,699 [INFO] Epoch 25: Train 0.3139 | Val 0.2219
+2025-06-10 11:59:54,641 [INFO] Epoch 26: Train 0.3151 | Val 0.2297
+2025-06-10 12:02:19,820 [INFO] Epoch 27: Train 0.3101 | Val 0.2201
+2025-06-10 12:02:19,821 [INFO] Early stopping at epoch 27
+2025-06-10 12:02:42,187 [INFO] Test Confusion Matrix:
+[[ 77   0   0 ...   0   0   0]
+ [  1  77   1 ...   0   0   0]
+ [  0   0  41 ...   0   0   0]
+ ...
+ [  0   0   0 ... 772   4   0]
+ [  0   0   0 ...  11  43   0]
+ [  0   0   0 ...   7   1 162]]
+2025-06-10 12:02:42,188 [INFO] Test Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     0.8556    0.8191    0.8370        94
+                                 Apple___Black_rot     0.8953    0.8280    0.8603        93
+                          Apple___Cedar_apple_rust     0.9111    1.0000    0.9535        41
+                                   Apple___healthy     0.9536    0.9150    0.9339       247
+                               Blueberry___healthy     0.8987    0.9467    0.9221       225
+          Cherry_(including_sour)___Powdery_mildew     0.9571    0.9873    0.9720       158
+                 Cherry_(including_sour)___healthy     0.8493    0.9688    0.9051       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.6484    0.7662    0.7024        77
+                       Corn_(maize)___Common_rust_     0.9937    0.8827    0.9349       179
+               Corn_(maize)___Northern_Leaf_Blight     0.8493    0.8378    0.8435       148
+                            Corn_(maize)___healthy     0.8398    0.9943    0.9105       174
+                                 Grape___Black_rot     0.9752    0.8870    0.9290       177
+                      Grape___Esca_(Black_Measles)     0.9531    0.8841    0.9173       207
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     0.9928    0.8571    0.9200       161
+                                   Grape___healthy     0.8955    0.9524    0.9231        63
+          Orange___Haunglongbing_(Citrus_greening)     0.9319    0.9939    0.9619       826
+                            Peach___Bacterial_spot     0.9571    0.9043    0.9300       345
+                                   Peach___healthy     0.7465    0.9815    0.8480        54
+                     Pepper,_bell___Bacterial_spot     0.5356    0.9533    0.6859       150
+                            Pepper,_bell___healthy     0.6873    0.9505    0.7977       222
+                             Potato___Early_blight     0.9417    0.7533    0.8370       150
+                              Potato___Late_blight     0.8699    0.7133    0.7839       150
+                                  Potato___healthy     0.4474    0.7391    0.5574        23
+                               Raspberry___healthy     0.7910    0.9464    0.8618        56
+                                 Soybean___healthy     0.9785    0.8953    0.9351       764
+                           Squash___Powdery_mildew     0.9904    0.7491    0.8530       275
+                          Strawberry___Leaf_scorch     0.9085    0.8976    0.9030       166
+                              Strawberry___healthy     0.6076    0.7059    0.6531        68
+                           Tomato___Bacterial_spot     0.9039    0.9436    0.9233       319
+                             Tomato___Early_blight     0.6258    0.6467    0.6361       150
+                              Tomato___Late_blight     0.7555    0.8427    0.7967       286
+                                Tomato___Leaf_Mold     0.7135    0.9231    0.8049       143
+                       Tomato___Septoria_leaf_spot     0.8305    0.5526    0.6637       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.9024    0.5896    0.7133       251
+                              Tomato___Target_Spot     0.6630    0.5687    0.6122       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     0.9019    0.9602    0.9301       804
+                      Tomato___Tomato_mosaic_virus     0.5443    0.7679    0.6370        56
+                                  Tomato___healthy     0.8901    0.6778    0.7696       239
+
+                                          accuracy                         0.8650      8146
+                                         macro avg     0.8314    0.8469    0.8305      8146
+                                      weighted avg     0.8780    0.8650    0.8648      8146
+
