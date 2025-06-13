@@ -1,7 +1,0 @@
-2025-05-28 18:46:21,590 [INFO] Created logger with run_dir: /home3/s5238366/plant-disease-classification/src/training/../../logs/resnet50/resnet50_7
-2025-05-28 18:46:21,591 [INFO] Starting training run.
-2025-05-28 18:46:21,608 [INFO] Copied main script to /home3/s5238366/plant-disease-classification/src/training/../../logs/resnet50/resnet50_7/train_resnet50.py
-2025-05-28 18:49:14,064 [INFO] Epoch 01 | Train: 1.6246 | Val: 1.1948
-2025-05-28 18:51:56,927 [INFO] Epoch 02 | Train: 1.2467 | Val: 1.0890
-2025-05-28 18:54:30,885 [INFO] Epoch 03 | Train: 1.1915 | Val: 1.0637
-2025-05-28 18:57:09,662 [INFO] Epoch 04 | Train: 1.1698 | Val: 1.0407
