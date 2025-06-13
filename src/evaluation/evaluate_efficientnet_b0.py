@@ -21,6 +21,7 @@ MODEL_SUB_PATH = "logs/effnet_b0_ensemble_replication/effnet_b0_ensemble_replica
 BATCH_SIZE = 32
 NUM_WORKERS = 4
 
+
 class AdaptiveEnsemble(nn.Module):
     def __init__(self, num_classes, pretrained=False):
         super().__init__()
@@ -37,7 +38,7 @@ class AdaptiveEnsemble(nn.Module):
             nn.BatchNorm1d(512),
             nn.ReLU(inplace=True),
             nn.Dropout(0.5),
-            nn.Linear(512, num_classes)
+            nn.Linear(512, num_classes),
         )
 
     def forward(self, x):
@@ -59,20 +60,18 @@ def evaluate_agent(model_path):
         val_size=config.VALIDATION_SPLIT_SIZE,
     )
 
-    eval_transform = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225]),
-    ])
+    eval_transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
 
     test_ds = PlantDiseaseDataset(test_df, transform=eval_transform)
     test_loader = DataLoader(
-        test_ds,
-        batch_size=BATCH_SIZE,
-        shuffle=False,
-        num_workers=NUM_WORKERS
+        test_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS
     )
     print(f"Test dataset loaded with {len(test_ds)} images.")
 
@@ -80,7 +79,7 @@ def evaluate_agent(model_path):
     model = AdaptiveEnsemble(num_classes=config.NUM_CLASSES, pretrained=False)
     model.load_state_dict(torch.load(model_path, map_location=config.DEVICE))
     model = model.to(config.DEVICE)
-    model.eval() # Set model to evaluation mode
+    model.eval()  # Set model to evaluation mode
 
     print("Running inference on the test set...")
     all_preds, all_labels = [], []
@@ -90,27 +89,27 @@ def evaluate_agent(model_path):
     with torch.no_grad():
         for imgs, labels in test_loader:
             imgs = imgs.to(config.DEVICE)
-            
-            if config.DEVICE.type == 'cuda':
+
+            if config.DEVICE.type == "cuda":
                 torch.cuda.synchronize()
-            
+
             start_time = time.time()
             outputs = model(imgs)
-            
-            if config.DEVICE.type == 'cuda':
+
+            if config.DEVICE.type == "cuda":
                 torch.cuda.synchronize()
             end_time = time.time()
 
-            total_inference_time += (end_time - start_time)
+            total_inference_time += end_time - start_time
             num_images += imgs.size(0)
 
             preds = outputs.argmax(dim=1).cpu().tolist()
             all_preds.extend(preds)
             all_labels.extend(labels.tolist())
 
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     print("Evaluation Results")
-    print("="*50)
+    print("=" * 50)
 
     avg_inference_time_ms = (total_inference_time / num_images) * 1000
     print(f"\nTotal inference time: {total_inference_time:.4f} seconds")
@@ -121,7 +120,7 @@ def evaluate_agent(model_path):
         all_labels,
         all_preds,
         target_names=[config.INV_LABEL_MAP[i] for i in range(config.NUM_CLASSES)],
-        digits=4
+        digits=4,
     )
     print("\nClassification Report:")
     print(report)
@@ -129,14 +128,19 @@ def evaluate_agent(model_path):
     print("\nGenerating Confusion Matrix plot...")
     cm = confusion_matrix(all_labels, all_preds)
     plt.figure(figsize=(20, 18))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=[config.INV_LABEL_MAP[i] for i in range(config.NUM_CLASSES)],
-                yticklabels=[config.INV_LABEL_MAP[i] for i in range(config.NUM_CLASSES)])
-    plt.title('Confusion Matrix')
-    plt.ylabel('Actual Label')
-    plt.xlabel('Predicted Label')
+    sns.heatmap(
+        cm,
+        annot=True,
+        fmt="d",
+        cmap="Blues",
+        xticklabels=[config.INV_LABEL_MAP[i] for i in range(config.NUM_CLASSES)],
+        yticklabels=[config.INV_LABEL_MAP[i] for i in range(config.NUM_CLASSES)],
+    )
+    plt.title("Confusion Matrix")
+    plt.ylabel("Actual Label")
+    plt.xlabel("Predicted Label")
     plt.tight_layout()
-    
+
     plot_path = os.path.join(os.path.dirname(model_path), "confusion_matrix.png")
     plt.savefig(plot_path)
     print(f"Confusion Matrix plot saved to: {plot_path}")
