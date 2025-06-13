@@ -183,3 +183,4 @@ cython_debug/
 !outputs/models/**/*
 outputs/models/resnet_ensemble
 /logs/**/*.py
+*.sh
