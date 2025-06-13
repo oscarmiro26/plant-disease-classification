@@ -1,0 +1,57 @@
+2025-06-11 13:48:15,615 [INFO] Created logger with run_dir: /home3/s5238366/plant-disease-classification/src/training/../../logs/ensemble_test/ensemble_test_2
+2025-06-11 13:48:15,616 [INFO] Starting ensemble evaluation.
+2025-06-11 13:49:36,270 [INFO] Ensemble Test Confusion Matrix:
+[[ 94   0   0 ...   0   0   0]
+ [  0  93   0 ...   0   0   0]
+ [  0   0  41 ...   0   0   0]
+ ...
+ [  0   0   0 ... 797   0   0]
+ [  0   0   0 ...   0  56   0]
+ [  0   0   0 ...   0   0 239]]
+2025-06-11 13:49:36,274 [INFO] Ensemble Test Classification Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     1.0000    1.0000    1.0000        94
+                                 Apple___Black_rot     1.0000    1.0000    1.0000        93
+                          Apple___Cedar_apple_rust     1.0000    1.0000    1.0000        41
+                                   Apple___healthy     1.0000    1.0000    1.0000       247
+                               Blueberry___healthy     1.0000    1.0000    1.0000       225
+          Cherry_(including_sour)___Powdery_mildew     1.0000    1.0000    1.0000       158
+                 Cherry_(including_sour)___healthy     1.0000    1.0000    1.0000       128
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     0.9625    1.0000    0.9809        77
+                       Corn_(maize)___Common_rust_     1.0000    0.9944    0.9972       179
+               Corn_(maize)___Northern_Leaf_Blight     0.9932    0.9797    0.9864       148
+                            Corn_(maize)___healthy     1.0000    1.0000    1.0000       174
+                                 Grape___Black_rot     1.0000    1.0000    1.0000       177
+                      Grape___Esca_(Black_Measles)     1.0000    1.0000    1.0000       207
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     1.0000    1.0000    1.0000       161
+                                   Grape___healthy     1.0000    1.0000    1.0000        63
+          Orange___Haunglongbing_(Citrus_greening)     1.0000    1.0000    1.0000       826
+                            Peach___Bacterial_spot     1.0000    1.0000    1.0000       345
+                                   Peach___healthy     1.0000    1.0000    1.0000        54
+                     Pepper,_bell___Bacterial_spot     1.0000    1.0000    1.0000       150
+                            Pepper,_bell___healthy     1.0000    1.0000    1.0000       222
+                             Potato___Early_blight     1.0000    1.0000    1.0000       150
+                              Potato___Late_blight     1.0000    0.9933    0.9967       150
+                                  Potato___healthy     1.0000    1.0000    1.0000        23
+                               Raspberry___healthy     1.0000    1.0000    1.0000        56
+                                 Soybean___healthy     1.0000    1.0000    1.0000       764
+                           Squash___Powdery_mildew     1.0000    1.0000    1.0000       275
+                          Strawberry___Leaf_scorch     1.0000    1.0000    1.0000       166
+                              Strawberry___healthy     1.0000    1.0000    1.0000        68
+                           Tomato___Bacterial_spot     0.9876    1.0000    0.9938       319
+                             Tomato___Early_blight     1.0000    0.9933    0.9967       150
+                              Tomato___Late_blight     0.9931    1.0000    0.9965       286
+                                Tomato___Leaf_Mold     1.0000    0.9930    0.9965       143
+                       Tomato___Septoria_leaf_spot     1.0000    1.0000    1.0000       266
+     Tomato___Spider_mites Two-spotted_spider_mite     0.9841    0.9841    0.9841       251
+                              Tomato___Target_Spot     0.9904    0.9763    0.9833       211
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     1.0000    0.9913    0.9956       804
+                      Tomato___Tomato_mosaic_virus     1.0000    1.0000    1.0000        56
+                                  Tomato___healthy     0.9715    1.0000    0.9856       239
+
+                                          accuracy                         0.9972      8146
+                                         macro avg     0.9969    0.9975    0.9972      8146
+                                      weighted avg     0.9972    0.9972    0.9972      8146
+
+2025-06-11 13:49:36,348 [INFO] Per-class metrics saved to /home3/s5238366/plant-disease-classification/src/training/../../logs/ensemble_test/ensemble_test_2/ensemble_metrics.csv

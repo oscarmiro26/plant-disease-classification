@@ -1,0 +1,3 @@
+2025-06-09 02:08:24,824 [INFO] Created logger with run_dir: /home3/s5238366/plant-disease-classification/src/training/../../logs/efficientnet_b0/efficientnet_b0_0
+2025-06-09 02:08:24,825 [INFO] Starting training run.
+2025-06-09 02:08:24,833 [INFO] Copied main script to /home3/s5238366/plant-disease-classification/src/training/../../logs/efficientnet_b0/efficientnet_b0_0/train_efficientnet_b0.py
